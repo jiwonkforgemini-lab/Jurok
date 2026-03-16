@@ -786,7 +786,8 @@ async function doSignup() {
     if (existing) { err.textContent = '이미 사용 중인 닉네임이에요'; btn.disabled=false; btn.textContent='가입하기'; return; }
 
     // 이메일 있으면 실제 이메일 사용, 없으면 가상 이메일
-    const signupEmail = email || nick.toLowerCase().replace(/[^a-z0-9]/g,'') + '@jurok.app';
+    const nickSlug = nick.toLowerCase().replace(/[^a-z0-9]/g,'') || 'user' + Date.now();
+    const signupEmail = email || nickSlug + '@jurok.app';
     const { data, error } = await supa.auth.signUp({ email: signupEmail, password: pw });
     if (error) throw error;
 
@@ -815,7 +816,8 @@ async function doLogin() {
   btn.disabled = true; btn.textContent = '처리 중...';
 
   try {
-    const fakeEmail = nick.toLowerCase().replace(/[^a-z0-9]/g,'') + '@jurok.app';
+    const nickSlug = nick.toLowerCase().replace(/[^a-z0-9]/g,'') || 'user';
+    const fakeEmail = nickSlug + '@jurok.app';
     const { data, error } = await supa.auth.signInWithPassword({ email: fakeEmail, password: pw });
     if (error) throw error;
     currentUser = data.user;
