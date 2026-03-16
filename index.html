@@ -187,7 +187,19 @@ body{font-family:var(--sans);background:var(--cream);color:var(--ink);min-height
 .search-empty-msg{font-family:var(--serif);font-size:15px;color:var(--ink-70);margin-bottom:5px}
 .search-empty-sub{font-size:12px;color:var(--ink-40)}
 
-/* ── FORM ── */
+/* 반별 별점 */
+.star-row{display:flex;gap:3px;padding-top:2px}
+.star-wrap{position:relative;width:28px;height:28px;cursor:pointer;flex-shrink:0}
+.star-wrap .s-bg{position:absolute;inset:0;font-size:28px;color:var(--ink-15);line-height:1;user-select:none}
+.star-wrap .s-fill{position:absolute;inset:0;font-size:28px;color:var(--gold);line-height:1;overflow:hidden;user-select:none;transition:width .1s}
+.star-wrap:hover .s-bg{color:var(--cream-3)}
+/* 수정 버튼 */
+.card-edit{position:absolute;top:var(--s1);right:36px;background:none;border:none;font-size:11px;color:var(--ink-15);cursor:pointer;opacity:0;transition:opacity .14s,color .14s;padding:4px;line-height:1}
+.card:hover .card-edit{opacity:1}.card-edit:hover{color:var(--gold)!important}
+/* 수정 모드 헤더 */
+.edit-mode-banner{background:var(--gold-bg);border:1px solid rgba(155,125,58,.22);border-radius:var(--r-sm);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s2)}
+.edit-mode-label{font-size:12px;font-weight:700;color:var(--gold)}
+.edit-cancel-btn{font-size:11px;padding:4px 10px;border:1px solid rgba(155,125,58,.3);border-radius:var(--r-sm);background:transparent;color:var(--gold);cursor:pointer}
 .form{display:flex;flex-direction:column;gap:var(--s3)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
 .form-divider{border:none;border-top:1px solid var(--ink-07);margin:4px 0}
@@ -549,7 +561,11 @@ select.fi{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='
 
   <!-- 기록하기 -->
   <div class="page" id="p-add">
-    <div class="sec-title">새 술 기록하기</div>
+    <div class="sec-title" id="add-title">새 술 기록하기</div>
+    <div class="edit-mode-banner" id="edit-banner" style="display:none">
+      <span class="edit-mode-label">✏️ 수정 중이에요</span>
+      <button class="edit-cancel-btn" onclick="cancelEdit()">취소</button>
+    </div>
     <div class="form">
       <div class="fg">
         <div class="fl">술 이름 <span style="color:var(--red)">*</span>
@@ -602,10 +618,13 @@ select.fi{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='
       <hr class="form-divider">
       <div class="fg">
         <div class="fl">별점 <span style="color:var(--red)">*</span></div>
+        <div id="star-display" style="font-size:12px;color:var(--ink-40);margin-bottom:4px">선택 안 함</div>
         <div class="star-row" id="star-row">
-          <span class="si" onclick="setR(1)">★</span><span class="si" onclick="setR(2)">★</span>
-          <span class="si" onclick="setR(3)">★</span><span class="si" onclick="setR(4)">★</span>
-          <span class="si" onclick="setR(5)">★</span>
+          <div class="star-wrap" onmousemove="hoverStar(event,1)" onmouseleave="unhoverStar()" onclick="clickStar(event,1)"><span class="s-bg">★</span><span class="s-fill" id="sf-1" style="width:0%">★</span></div>
+          <div class="star-wrap" onmousemove="hoverStar(event,2)" onmouseleave="unhoverStar()" onclick="clickStar(event,2)"><span class="s-bg">★</span><span class="s-fill" id="sf-2" style="width:0%">★</span></div>
+          <div class="star-wrap" onmousemove="hoverStar(event,3)" onmouseleave="unhoverStar()" onclick="clickStar(event,3)"><span class="s-bg">★</span><span class="s-fill" id="sf-3" style="width:0%">★</span></div>
+          <div class="star-wrap" onmousemove="hoverStar(event,4)" onmouseleave="unhoverStar()" onclick="clickStar(event,4)"><span class="s-bg">★</span><span class="s-fill" id="sf-4" style="width:0%">★</span></div>
+          <div class="star-wrap" onmousemove="hoverStar(event,5)" onmouseleave="unhoverStar()" onclick="clickStar(event,5)"><span class="s-bg">★</span><span class="s-fill" id="sf-5" style="width:0%">★</span></div>
         </div>
       </div>
       <div class="fg"><div class="fl">맛 한 줄 요약</div><input class="fi" id="f-sum" placeholder="예) 아카시아 꿀 향에 탄산이 살아있는 봄 막걸리"></div>
@@ -653,7 +672,7 @@ select.fi{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='
           </div>
         </div>
       </div>
-      <button class="btn-submit" onclick="submitR()">저장</button>
+      <button class="btn-submit" id="submit-btn" onclick="submitR()">저장</button>
     </div>
   </div>
 
@@ -694,7 +713,7 @@ let curFilter = 'all';
 let curSort   = 'recent';
 let selR = 0, selCatV = '', selTastes = [], selRebuy = null;
 let curSTab = 'feed', friendView = null, groupView = null;
-let selEmj = '🍶', curRecIdx = null;
+let selEmj = '🍶', curRecIdx = null, editingReviewId = null;
 let editingGroupId = null;
 
 const SORT_CYCLE  = ['recent','rating','oldest','name'];
@@ -899,7 +918,19 @@ function setSTab(t, btn) {
    HELPERS
 ══════════════════════════════════ */
 function stars(n, sz=13) {
-  return [1,2,3,4,5].map(i => `<span class="${i<=n?'s-on':'s-off'}" style="font-size:${sz}px">★</span>`).join('');
+  // 카드용 — 반별 지원
+  return starsHtml(n, sz);
+}
+function starsHtml(n, sz=13) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    const pct = Math.min(Math.max((n - (i-1)) * 100, 0), 100);
+    html += `<span style="position:relative;display:inline-block;font-size:${sz}px;width:${sz}px;line-height:1">
+      <span style="color:var(--ink-15)">★</span>
+      <span style="position:absolute;left:0;top:0;overflow:hidden;width:${pct}%;color:var(--gold)">★</span>
+    </span>`;
+  }
+  return html;
 }
 function buildFilters() {
   const cats = [...new Set(db.map(r => r.cat).filter(Boolean))];
@@ -963,10 +994,11 @@ function renderList() {
   el.innerHTML = `<div class="cards">` + data.map(r => {
     const cnt = nameCnt[r.name] || 1;
     return `<div class="card">
+      <button class="card-edit" onclick="editR('${r.id}')">✏</button>
       <button class="card-del" onclick="delR('${r.id}')">✕</button>
       <div class="card-top">
         <div class="card-name">${r.name}${r.abv?`<span class="abv">${r.abv}</span>`:''}</div>
-        <div class="card-stars">${stars(r.rating)}</div>
+        <div class="card-stars">${starsHtml(r.rating)}</div>
       </div>
       ${r.summary?`<div class="card-summary">"${r.summary}"</div>`:''}
       <div class="card-pills">
@@ -1088,7 +1120,28 @@ async function aiAnalyze() {
 /* ══════════════════════════════════
    FORM CONTROLS
 ══════════════════════════════════ */
-function setR(n) { selR=n; document.querySelectorAll('#star-row .si').forEach((s,i)=>s.classList.toggle('on',i<n)); }
+// 반별 별점
+function renderStars(val) {
+  for (let i = 1; i <= 5; i++) {
+    const pct = Math.min(Math.max((val - (i-1)) * 100, 0), 100);
+    document.getElementById('sf-' + i).style.width = pct + '%';
+  }
+  const lbl = val ? (Number.isInteger(val) ? '★'.repeat(val) + ' (' + val + '.0)' : '★'.repeat(Math.floor(val)) + '½ (' + val + ')') : '선택 안 함';
+  document.getElementById('star-display').textContent = lbl;
+}
+function hoverStar(e, i) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const half = (e.clientX - rect.left) < rect.width / 2;
+  renderStars(half ? i - 0.5 : i);
+}
+function unhoverStar() { renderStars(selR); }
+function clickStar(e, i) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const half = (e.clientX - rect.left) < rect.width / 2;
+  selR = half ? i - 0.5 : i;
+  renderStars(selR);
+}
+
 function selCat(btn, v) { document.querySelectorAll('#cat-chips .chip').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); selCatV=v; }
 function togT(btn, v) {
   if (btn.classList.contains('on')) { btn.classList.remove('on'); selTastes=selTastes.filter(t=>t!==v); }
@@ -1105,13 +1158,56 @@ function resetForm() {
   document.getElementById('ai-result').style.display='none';
   document.getElementById('ai-feedback').innerHTML='';
   document.getElementById('ai-feedback').className='ai-feedback';
-  selR=0; selCatV=''; selTastes=[]; selRebuy=null;
-  document.querySelectorAll('#star-row .si').forEach(s=>s.classList.remove('on'));
+  selR=0; selCatV=''; selTastes=[]; selRebuy=null; editingReviewId=null;
+  renderStars(0);
   document.querySelectorAll('#cat-chips .chip, #taste-chips .chip').forEach(b=>b.classList.remove('on'));
   document.getElementById('rb-y').className='rb';
   document.getElementById('rb-n').className='rb';
   document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('edit-banner').style.display = 'none';
+  document.getElementById('add-title').textContent = '새 술 기록하기';
+  document.getElementById('submit-btn').textContent = '저장';
 }
+
+function editR(id) {
+  const r = db.find(r => r.id === id);
+  if (!r) return;
+  editingReviewId = id;
+  // 폼 채우기
+  document.getElementById('f-name').value   = r.name || '';
+  document.getElementById('f-date').value   = r.date || '';
+  document.getElementById('f-abv').value    = r.abv  || '';
+  document.getElementById('f-sum').value    = r.summary || '';
+  document.getElementById('f-note').value   = r.note || '';
+  document.getElementById('f-pair').value   = r.pairing || '';
+  document.getElementById('f-scene').value  = r.scene || '';
+  document.getElementById('f-origin').value = r.origin || '';
+  document.getElementById('f-price').value  = r.price || '';
+  // 별점
+  selR = r.rating || 0;
+  renderStars(selR);
+  // 카테고리
+  selCatV = r.cat || '';
+  document.querySelectorAll('#cat-chips .chip').forEach(b => {
+    b.classList.toggle('on', b.textContent.trim() === selCatV);
+  });
+  // 맛 태그
+  selTastes = [...(r.tastes || [])];
+  document.querySelectorAll('#taste-chips .chip').forEach(b => {
+    b.classList.toggle('on', selTastes.includes(b.textContent.trim()));
+  });
+  // 재구매
+  setRB(r.rebuy);
+  // 수정 모드 UI
+  document.getElementById('edit-banner').style.display = 'flex';
+  document.getElementById('add-title').textContent = '기록 수정하기';
+  document.getElementById('submit-btn').textContent = '수정 저장';
+  go('add');
+  window.scrollTo(0, 0);
+}
+
+function cancelEdit() { resetForm(); go('list'); }
+
 async function submitR() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) { alert('술 이름을 입력해주세요'); return; }
@@ -1126,18 +1222,30 @@ async function submitR() {
     pairing: document.getElementById('f-pair').value.trim(),
     scene: document.getElementById('f-scene').value.trim(),
     price: document.getElementById('f-price').value,
-    rebuy: selRebuy, ts: Date.now(),
+    rebuy: selRebuy,
   };
 
-  showLoading('저장 중...');
-  try {
-    const { data, error } = await supa.from('reviews').insert({ ...review, user_id: currentProfile.id }).select().single();
-    if (error) throw error;
-    db.unshift(data);
-    hideLoading(); resetForm();
-    alert('저장되었습니다 🥂'); go('list');
-  } catch(e) {
-    hideLoading(); alert('저장 실패: ' + e.message);
+  if (editingReviewId) {
+    // 수정 모드
+    showLoading('수정 중...');
+    try {
+      const { data, error } = await supa.from('reviews').update(review).eq('id', editingReviewId).select().single();
+      if (error) throw error;
+      const idx = db.findIndex(r => r.id === editingReviewId);
+      if (idx !== -1) db[idx] = data;
+      hideLoading(); resetForm();
+      alert('수정되었습니다 ✏️'); go('list');
+    } catch(e) { hideLoading(); alert('수정 실패: ' + e.message); }
+  } else {
+    // 새 기록
+    showLoading('저장 중...');
+    try {
+      const { data, error } = await supa.from('reviews').insert({ ...review, user_id: currentProfile.id, ts: Date.now() }).select().single();
+      if (error) throw error;
+      db.unshift(data);
+      hideLoading(); resetForm();
+      alert('저장되었습니다 🥂'); go('list');
+    } catch(e) { hideLoading(); alert('저장 실패: ' + e.message); }
   }
 }
 
