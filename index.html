@@ -1368,11 +1368,12 @@ async function addFriend() {
   const { data: existing } = await supa.from('friends').select('id').eq('user_id', currentProfile.id).eq('friend_id', target.id).maybeSingle();
   if (existing) { hideLoading(); alert('이미 추가된 친구예요'); return; }
 
-  // 양방향으로 동시에 추가
-  await supa.from('friends').upsert([
-    { user_id: currentProfile.id, friend_id: target.id },
-    { user_id: target.id, friend_id: currentProfile.id },
-  ], { onConflict: 'user_id,friend_id', ignoreDuplicates: true });
+  // 양방향으로 추가 — 각각 따로 insert
+  const { error: e1 } = await supa.from('friends').insert({ user_id: currentProfile.id, friend_id: target.id });
+  if (e1) { hideLoading(); alert('친구 추가 실패: ' + e1.message); return; }
+
+  // 상대방 쪽도 추가 (이미 있으면 무시)
+  await supa.from('friends').insert({ user_id: target.id, friend_id: currentProfile.id }).then(() => {});
 
   document.getElementById('friend-code-inp').value = '';
   hideLoading(); renderFriends();
