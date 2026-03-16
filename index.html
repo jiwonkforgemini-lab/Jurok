@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a1108">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="酒錄">
+<meta name="description" content="나의 술 일지 — 마신 술을 기록하고 친구들과 취향을 나눠요">
+<title>酒錄 — 나의 술 일지</title>
+<link rel="manifest" href="data:application/json,{&quot;name&quot;:&quot;酒錄 나의 술 일지&quot;,&quot;short_name&quot;:&quot;酒錄&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#faf6ed&quot;,&quot;theme_color&quot;:&quot;#1a1108&quot;,&quot;icons&quot;:[{&quot;src&quot;:&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%231a1108'/%3E%3Ctext x='256' y='340' text-anchor='middle' font-size='280' font-family='serif' fill='%23faf6ed'%3E酒%3C/text%3E%3C/svg%3E&quot;,&quot;sizes&quot;:&quot;512x512&quot;,&quot;type&quot;:&quot;image/svg+xml&quot;}]}">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%231a1108'/><text x='256' y='340' text-anchor='middle' font-size='280' font-family='serif' fill='%23faf6ed'>酒</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESET & TOKENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:        #1a1108;
+  --ink-70:     rgba(26,17,8,.70);
+  --ink-40:     rgba(26,17,8,.40);
+  --ink-15:     rgba(26,17,8,.15);
+  --ink-07:     rgba(26,17,8,.07);
+  --gold:       #9b7d3a;
+  --gold-pale:  #c8a85a;
+  --gold-bg:    rgba(155,125,58,.08);
+  --cream:      #faf6ed;
+  --cream-2:    #f3ede0;
+  --cream-3:    #eae0cc;
+  --red:        #7a2020;
+  --red-soft:   rgba(122,32,32,.10);
+  --green-soft: rgba(40,90,40,.10);
+  --green:      #285a28;
+  --serif: 'Shippori Mincho', serif;
+  --sans:  'Noto Sans KR', sans-serif;
+  --s1: 8px; --s2: 16px; --s3: 24px; --s4: 32px; --s5: 40px;
+  --r-sm: 3px; --r-md: 6px;
+}
+
+html { font-size: 14px; }
+body {
+  font-family: var(--sans);
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.shell {
+  max-width: 760px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HEADER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.hd {
+  background: var(--ink);
+  padding: 20px var(--s4) 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+}
+.hd-wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.hd-title {
+  font-family: var(--serif);
+  font-size: 30px;
+  font-weight: 700;
+  color: #faf6ed;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.hd-title em { color: var(--gold-pale); font-style: normal; }
+.hd-subtitle {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 300;
+  color: rgba(255,255,255,.22);
+  letter-spacing: 1.5px;
+  padding-bottom: 1px;
+}
+/* 카운터: 작은 pill 뱃지 */
+.hd-counter {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 100px;
+  padding: 5px 12px 5px 10px;
+}
+.hd-count {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(200,168,90,.65);
+  line-height: 1;
+}
+.hd-count-lbl {
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 300;
+  color: rgba(255,255,255,.22);
+  letter-spacing: .3px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NAV
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.nav {
+  background: var(--cream-2);
+  border-bottom: 1px solid var(--ink-15);
+  display: flex;
+  padding: 0 var(--s4);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.nav-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .3px;
+  color: var(--ink-40);
+  padding: 14px var(--s2) 12px;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color .18s, border-color .18s;
+  white-space: nowrap;
+}
+.nav-btn.on { color: var(--red); border-bottom-color: var(--red); }
+.nav-btn:hover:not(.on) { color: var(--ink-70); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PAGES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.page { display: none; padding: var(--s4) var(--s4) 80px; }
+.page.on { display: block; animation: up .22s ease both; }
+@keyframes up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION HEADING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sec-title {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--ink-15);
+  margin-bottom: var(--s3);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+}
+.sec-title-count {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--ink-40);
+  font-family: var(--sans);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FILTER PILLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: var(--s3);
+}
+.f-btn {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 13px;
+  border-radius: 100px;
+  border: 1px solid var(--ink-15);
+  background: transparent;
+  color: var(--ink-70);
+  cursor: pointer;
+  transition: all .14s;
+  letter-spacing: .2px;
+}
+.f-btn.on  { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.f-btn:hover:not(.on) { background: var(--cream-2); border-color: var(--ink-40); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   검색 & 정렬
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.search-sort-row {
+  display: flex;
+  gap: var(--s1);
+  margin-bottom: var(--s2);
+  align-items: center;
+}
+.search-wrap {
+  flex: 1;
+  position: relative;
+}
+.search-wrap svg {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--ink-40);
+}
+.search-inp {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--ink-15);
+  border-radius: var(--r-sm);
+  padding: 9px 12px 9px 32px;
+  outline: none;
+  transition: border-color .15s;
+  -webkit-appearance: none;
+}
+.search-inp:focus { border-color: var(--gold); }
+.search-inp::placeholder { color: var(--ink-40); font-size: 12px; }
+.sort-btn {
+  flex-shrink: 0;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 9px 13px;
+  border: 1px solid var(--ink-15);
+  border-radius: var(--r-sm);
+  background: #fff;
+  color: var(--ink-70);
+  cursor: pointer;
+  transition: all .14s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sort-btn:hover { background: var(--cream-2); border-color: var(--ink-40); }
+.sort-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+/* 마신 횟수 뱃지 */
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--r-sm);
+  background: var(--cream-2);
+  color: var(--ink-40);
+  border: 1px solid var(--ink-15);
+}
+
+/* 검색 결과 없음 */
+.search-empty { text-align: center; padding: 48px var(--s3); }
+.search-empty-msg { font-family: var(--serif); font-size: 15px; color: var(--ink-70); margin-bottom: 5px; }
+.search-empty-sub { font-size: 12px; color: var(--ink-40); }
+
+
+.cards { display: flex; flex-direction: column; gap: 1px; }
+.card {
+  background: #fff;
+  border: 1px solid var(--ink-07);
+  border-left: 3px solid var(--ink-15);
+  padding: var(--s2) var(--s3) var(--s2) var(--s2);
+  position: relative;
+  transition: border-left-color .16s, background .16s, transform .16s;
+  cursor: default;
+}
+.card:first-child { border-radius: var(--r-md) var(--r-md) 0 0; }
+.card:last-child  { border-radius: 0 0 var(--r-md) var(--r-md); }
+.card:only-child  { border-radius: var(--r-md); }
+.card:hover { border-left-color: var(--red); background: #fffef9; transform: translateX(3px); }
+
+.card-top { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: var(--s2); margin-bottom: 10px; }
+.card-name { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.25; }
+.card-name .abv { font-family: var(--sans); font-size: 11px; font-weight: 400; color: var(--ink-40); margin-left: 7px; }
+.card-stars { display: flex; gap: 2px; flex-shrink: 0; padding-top: 3px; }
+.s-on  { font-size: 13px; color: var(--gold); }
+.s-off { font-size: 13px; color: var(--ink-15); }
+
+.card-summary {
+  font-family: var(--serif);
+  font-size: 12.5px;
+  color: var(--ink-70);
+  font-style: italic;
+  line-height: 1.6;
+  border-left: 2px solid var(--gold-pale);
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+.card-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.pill { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: var(--r-sm); letter-spacing: .3px; white-space: nowrap; }
+.p-cat    { background: var(--ink); color: var(--gold-pale); }
+.p-region { background: var(--cream-2); color: var(--ink-70); border: 1px solid var(--ink-15); }
+.p-taste  { background: var(--cream-3); color: var(--ink-70); border: 1px solid var(--ink-15); }
+.p-date   { background: none; color: var(--ink-40); font-size: 10px; padding-left: 0; }
+
+.card-desc { font-size: 11.5px; color: var(--ink-40); line-height: 1.65; margin-bottom: 10px; }
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--s1); font-size: 11px; color: var(--ink-40);
+}
+.card-meta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.card-meta-item { display: flex; align-items: center; gap: 4px; }
+.rebuy-tag { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: var(--r-sm); }
+.rebuy-y { background: var(--green-soft); color: var(--green); }
+.rebuy-n { background: var(--red-soft); color: var(--red); }
+
+.card-del {
+  position: absolute; top: var(--s1); right: var(--s2);
+  background: none; border: none; font-size: 11px; color: var(--ink-15);
+  cursor: pointer; opacity: 0; transition: opacity .14s, color .14s; padding: 4px; line-height: 1;
+}
+.card:hover .card-del { opacity: 1; }
+.card-del:hover { color: var(--red) !important; }
+
+/* 추천 버튼 (카드 안) */
+.rec-inline-btn {
+  font-family: var(--sans);
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--ink-15);
+  background: transparent;
+  color: var(--ink-40);
+  cursor: pointer;
+  transition: all .14s;
+  white-space: nowrap;
+}
+.rec-inline-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-bg); }
+
+/* friend/group feed badge */
+.by-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--gold); }
+.by-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); display: inline-block; }
+
+/* empty */
+.empty { text-align: center; padding: 72px var(--s3); }
+.empty-glyph { font-size: 32px; margin-bottom: var(--s2); opacity: .25; }
+.empty-msg { font-family: var(--serif); font-size: 16px; color: var(--ink-70); margin-bottom: 6px; }
+.empty-sub { font-size: 11.5px; color: var(--ink-40); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FORM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.form { display: flex; flex-direction: column; gap: var(--s3); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); }
+@media (max-width: 520px) { .form-row { grid-template-columns: 1fr; } }
+.form-divider { border: none; border-top: 1px solid var(--ink-07); margin: 4px 0; }
+
+.fg { display: flex; flex-direction: column; gap: 7px; }
+.fl { font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--ink-40); font-family: var(--sans); font-weight: 500; }
+.fl-note { font-size: 10px; text-transform: none; letter-spacing: 0; color: var(--ink-40); font-weight: 300; margin-left: 6px; }
+
+.fi {
+  font-family: var(--sans); font-size: 13px; color: var(--ink);
+  background: #fff; border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  padding: 10px 13px; outline: none; transition: border-color .15s; width: 100%; -webkit-appearance: none;
+}
+.fi:focus { border-color: var(--gold); }
+.fi::placeholder { color: var(--ink-40); font-size: 12px; }
+textarea.fi { resize: vertical; min-height: 80px; line-height: 1.7; }
+select.fi {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(26,17,8,0.35)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 13px center; padding-right: 32px;
+}
+
+/* AI row */
+.ai-row { display: flex; gap: var(--s1); }
+.ai-row .fi { flex: 1; }
+.ai-btn {
+  flex-shrink: 0; padding: 10px 16px;
+  background: var(--ink); color: var(--gold-pale);
+  border: none; border-radius: var(--r-sm);
+  font-family: var(--serif); font-size: 12px; font-weight: 600; letter-spacing: .5px;
+  cursor: pointer; transition: opacity .15s; white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+}
+.ai-btn:hover:not(:disabled) { opacity: .82; }
+.ai-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+.ai-feedback {
+  font-size: 11.5px; color: var(--ink-40); min-height: 16px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ai-feedback.loading { color: var(--gold); }
+.ai-feedback.error   { color: var(--red); }
+.spinner {
+  width: 10px; height: 10px;
+  border: 1.5px solid var(--gold-pale); border-top-color: var(--gold);
+  border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.ai-result {
+  background: var(--gold-bg); border: 1px solid rgba(155,125,58,.18);
+  border-radius: var(--r-sm); padding: 13px 15px;
+  font-size: 12px; color: var(--ink-70); line-height: 1.75; display: none;
+}
+.ai-result b { color: var(--gold); font-weight: 600; }
+
+/* Star rating */
+.star-row { display: flex; gap: 5px; padding-top: 2px; }
+.si { font-size: 28px; cursor: pointer; color: var(--ink-15); transition: color .1s, transform .12s; user-select: none; line-height: 1; }
+.si.on { color: var(--gold); }
+.si:hover { transform: scale(1.12); }
+
+/* Chip groups */
+.chip-group { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 2px; }
+.chip {
+  font-family: var(--sans); font-size: 11.5px; font-weight: 400;
+  padding: 5px 13px; border-radius: 100px;
+  border: 1px solid var(--ink-15); background: #fff; color: var(--ink-70);
+  cursor: pointer; transition: all .13s;
+}
+.chip.on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.chip:hover:not(.on) { background: var(--cream-2); border-color: var(--ink-40); }
+
+/* Rebuy */
+.rebuy-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s1); }
+.rb {
+  padding: 10px; border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  background: #fff; color: var(--ink-70);
+  font-family: var(--sans); font-size: 12px; cursor: pointer; text-align: center; transition: all .14s;
+}
+.rb.y { background: var(--green-soft); border-color: rgba(40,90,40,.25); color: var(--green); font-weight: 500; }
+.rb.n { background: var(--red-soft); border-color: rgba(122,32,32,.25); color: var(--red); font-weight: 500; }
+
+/* Submit */
+.btn-submit {
+  width: 100%; padding: 13px;
+  background: var(--ink); color: var(--gold-pale);
+  border: none; border-radius: var(--r-sm);
+  font-family: var(--serif); font-size: 14px; font-weight: 700; letter-spacing: 2px;
+  cursor: pointer; transition: opacity .15s;
+}
+.btn-submit:hover { opacity: .85; }
+.btn-submit:active { opacity: .7; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   AI 설정 배너 & 모달
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.ai-setup-banner {
+  background: var(--gold-bg); border: 1px solid rgba(155,125,58,.22);
+  border-radius: var(--r-sm); padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer; transition: background .14s; margin-bottom: 4px;
+}
+.ai-setup-banner:hover { background: rgba(155,125,58,.14); }
+.ai-setup-banner-icon { font-size: 15px; flex-shrink: 0; }
+.ai-setup-banner-text { flex: 1; }
+.ai-setup-banner-title { font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 2px; }
+.ai-setup-banner-sub   { font-size: 11px; color: var(--ink-40); line-height: 1.4; }
+.ai-setup-banner-arrow { font-size: 12px; color: var(--gold); opacity: .6; flex-shrink: 0; }
+.ai-key-set-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--green); background: var(--green-soft);
+  border: 1px solid rgba(40,90,40,.2); border-radius: var(--r-sm); padding: 3px 9px;
+}
+.ai-provider-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: var(--s2); }
+.ai-provider-btn {
+  padding: 12px 8px; border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  background: #fff; cursor: pointer; text-align: center; transition: all .14s;
+}
+.ai-provider-btn.on { border-color: var(--gold); background: var(--gold-bg); }
+.ai-provider-btn:hover:not(.on) { background: var(--cream-2); border-color: var(--ink-40); }
+.ai-provider-logo { font-size: 20px; margin-bottom: 4px; }
+.ai-provider-name { font-size: 11px; font-weight: 700; color: var(--ink-70); }
+.ai-provider-model { font-size: 10px; color: var(--ink-40); margin-top: 2px; line-height: 1.3; }
+.ai-key-help {
+  font-size: 11px; color: var(--ink-40); line-height: 1.7;
+  background: var(--cream-2); border-radius: var(--r-sm); padding: 10px 12px; margin-bottom: var(--s2);
+}
+.ai-key-help a { color: var(--gold); text-decoration: underline; cursor: pointer; }
+.ai-key-inp-row { display: flex; gap: var(--s1); margin-bottom: var(--s1); }
+.ai-key-inp-row .modal-input { flex: 1; margin-bottom: 0; font-family: monospace; font-size: 11px; letter-spacing: .5px; }
+.ai-key-toggle { padding: 11px 13px; border: 1px solid var(--ink-15); border-radius: var(--r-sm); background: #fff; cursor: pointer; font-size: 12px; color: var(--ink-40); flex-shrink: 0; transition: all .14s; }
+.ai-key-toggle:hover { background: var(--cream-2); }
+.ai-key-warn { font-size: 10.5px; color: var(--ink-40); line-height: 1.6; margin-bottom: var(--s2); }
+.ai-key-warn b { color: var(--red); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   STATS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: var(--s1); margin-bottom: var(--s3); }
+@media (max-width: 460px) { .stat-grid { grid-template-columns: repeat(2,1fr); } }
+.stat-box {
+  background: #fff; border: 1px solid var(--ink-07);
+  border-top: 2px solid var(--red); border-radius: var(--r-sm);
+  padding: 16px 14px; text-align: center;
+}
+.stat-n { font-family: var(--serif); font-size: 28px; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 6px; }
+.stat-l { font-size: 10px; color: var(--ink-40); letter-spacing: .8px; }
+
+.chart-box { background: #fff; border: 1px solid var(--ink-07); border-radius: var(--r-md); padding: var(--s3); margin-bottom: var(--s2); }
+.chart-title { font-family: var(--serif); font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: var(--s2); padding-bottom: var(--s1); border-bottom: 1px solid var(--ink-07); }
+.bar-row { display: flex; align-items: center; gap: 11px; margin-bottom: 10px; }
+.bar-lbl { font-size: 11px; color: var(--ink-70); width: 76px; flex-shrink: 0; text-align: right; line-height: 1.3; }
+.bar-track { flex: 1; height: 6px; background: var(--cream-3); border-radius: 100px; position: relative; overflow: visible; }
+.bar-fill { height: 100%; background: var(--red); border-radius: 100px; position: relative; transition: width .55s cubic-bezier(.22,1,.36,1); }
+.bar-val { position: absolute; right: -20px; top: 50%; transform: translateY(-50%); font-size: 10px; color: var(--ink-40); }
+
+.top-list { display: flex; flex-direction: column; gap: 1px; background: var(--ink-07); border-radius: var(--r-md); overflow: hidden; }
+.top-item { background: #fff; padding: 13px 16px; display: flex; align-items: center; gap: 14px; }
+.top-rank { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--red); width: 22px; flex-shrink: 0; }
+.top-info { flex: 1; min-width: 0; }
+.top-name { font-size: 13.5px; color: var(--ink); font-weight: 500; }
+.top-sub  { font-size: 11px; color: var(--ink-40); margin-top: 2px; }
+.top-score { font-family: var(--serif); font-size: 18px; color: var(--gold); flex-shrink: 0; }
+.top-score small { font-size: 11px; color: var(--ink-40); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FRIENDS / SOCIAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* 서브탭 */
+.social-tabs { display: flex; gap: 6px; margin-bottom: var(--s3); flex-wrap: wrap; }
+.stab {
+  font-family: var(--sans); font-size: 11px; font-weight: 500;
+  padding: 5px 14px; border-radius: 100px;
+  border: 1px solid var(--ink-15); background: transparent; color: var(--ink-40);
+  cursor: pointer; transition: all .14s;
+}
+.stab.on { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.stab:hover:not(.on) { background: var(--cream-2); color: var(--ink); border-color: var(--ink-40); }
+
+/* 내 프로필 박스 */
+.my-profile {
+  background: #fff; border: 1px solid var(--ink-07); border-radius: var(--r-md);
+  padding: var(--s2) var(--s3); display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s3);
+}
+.profile-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--ink); color: var(--gold-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 18px; font-weight: 700; flex-shrink: 0;
+}
+.profile-info { flex: 1; }
+.profile-name { font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--ink); }
+.profile-code { font-size: 11px; color: var(--ink-40); margin-top: 3px; }
+.profile-code b { font-family: var(--serif); color: var(--gold); font-weight: 600; font-size: 13px; }
+.copy-btn {
+  font-size: 11px; padding: 6px 13px;
+  background: var(--gold-bg); border: 1px solid rgba(155,125,58,.2); border-radius: var(--r-sm);
+  color: var(--gold); cursor: pointer; font-family: var(--serif); font-weight: 600;
+  transition: background .14s; white-space: nowrap;
+}
+.copy-btn:hover { background: rgba(155,125,58,.15); }
+
+/* 추가 행 */
+.add-row { display: flex; gap: var(--s1); margin-bottom: var(--s3); }
+.add-row .fi { flex: 1; text-transform: uppercase; }
+.add-btn {
+  padding: 10px 16px; background: #fff; border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  font-family: var(--sans); font-size: 12px; color: var(--ink-70); cursor: pointer; white-space: nowrap; transition: all .14s;
+}
+.add-btn:hover { background: var(--cream-2); border-color: var(--ink-40); }
+
+/* 친구 카드 */
+.friend-card {
+  background: #fff; border: 1px solid var(--ink-07); border-radius: var(--r-md);
+  padding: 13px var(--s2); display: flex; align-items: center; gap: var(--s2);
+  margin-bottom: var(--s1); cursor: pointer; transition: all .14s; position: relative;
+}
+.friend-card:hover { border-color: var(--ink-15); background: #fffef9; }
+.f-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--cream-2); border: 1px solid var(--ink-15);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 14px; font-weight: 700; color: var(--ink-70); flex-shrink: 0;
+}
+.f-info { flex: 1; }
+.f-name { font-family: var(--serif); font-size: 14px; font-weight: 600; color: var(--ink); }
+.f-count { font-size: 11px; color: var(--ink-40); margin-top: 2px; }
+.f-remove { background: none; border: none; color: var(--ink-15); font-size: 12px; cursor: pointer; opacity: 0; transition: opacity .14s, color .14s; padding: 4px; }
+.friend-card:hover .f-remove { opacity: 1; }
+.f-remove:hover { color: var(--red) !important; }
+
+/* 피드 섹션 타이틀 */
+.feed-section-title {
+  font-family: var(--serif); font-size: 14px; font-weight: 700; color: var(--ink);
+  margin: var(--s3) 0 var(--s2); padding-bottom: var(--s1); border-bottom: 1px solid var(--ink-07);
+}
+
+/* 친구 뷰 헤더 */
+.fv-header { display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s3); }
+.fv-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--ink); color: var(--gold-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 20px; font-weight: 700;
+}
+.fv-name { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--ink); }
+.fv-sub  { font-size: 11px; color: var(--ink-40); margin-top: 3px; }
+.back-btn {
+  margin-left: auto; background: none; border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  padding: 7px 14px; font-family: var(--sans); font-size: 11px; color: var(--ink-70); cursor: pointer; transition: all .14s;
+}
+.back-btn:hover { background: var(--cream-2); }
+
+/* 그룹 카드 */
+.group-card {
+  background: #fff; border: 1px solid var(--ink-07); border-left: 3px solid var(--gold);
+  border-radius: var(--r-md); padding: 14px var(--s2); margin-bottom: var(--s1);
+  cursor: pointer; transition: all .14s; position: relative;
+}
+.group-card:hover { background: #fffef9; border-left-color: var(--red); transform: translateX(2px); }
+.group-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.group-icon { font-size: 18px; flex-shrink: 0; }
+.group-name { font-family: var(--serif); font-size: 15px; font-weight: 700; color: var(--ink); flex: 1; }
+.group-meta { font-size: 11px; color: var(--ink-40); display: flex; gap: 12px; }
+.group-del { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--ink-15); font-size: 11px; cursor: pointer; opacity: 0; transition: opacity .14s; padding: 3px; }
+.group-card:hover .group-del { opacity: 1; }
+.group-del:hover { color: var(--red) !important; }
+
+/* 그룹 뷰 헤더 */
+.grp-header { display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s3); }
+.grp-icon-lg { font-size: 28px; flex-shrink: 0; }
+.grp-name { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--ink); }
+.grp-sub { font-size: 11px; color: var(--ink-40); margin-top: 2px; }
+/* 멤버 pills */
+.member-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: var(--s3); }
+.member-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: #fff; border: 1px solid var(--ink-07); border-radius: 100px;
+  padding: 4px 12px 4px 8px;
+}
+.member-pill-av {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--cream-2);
+  border: 1px solid var(--ink-15); display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 10px; font-weight: 700; color: var(--ink-70); flex-shrink: 0;
+}
+.member-pill-name { font-size: 11px; color: var(--ink-70); }
+.member-pill-me { font-size: 10px; color: var(--gold); margin-left: 2px; }
+
+/* 취향 궁합 */
+.compat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: var(--s1); margin-bottom: var(--s3); }
+.compat-box { background: #fff; border: 1px solid var(--ink-07); border-radius: var(--r-md); padding: 16px; text-align: center; }
+.compat-pct { font-family: var(--serif); font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+.compat-name { font-size: 12px; font-weight: 500; color: var(--ink-70); margin-bottom: 5px; }
+.compat-common { font-size: 10px; color: var(--ink-40); line-height: 1.6; }
+.compat-bar { height: 3px; background: var(--cream-3); border-radius: 100px; margin-top: 10px; overflow: hidden; }
+.compat-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--red)); border-radius: 100px; transition: width .6s cubic-bezier(.22,1,.36,1); }
+
+/* 추천 수신함 */
+.rec-inbox {
+  background: var(--gold-bg); border: 1px solid rgba(155,125,58,.2);
+  border-radius: var(--r-sm); padding: 13px 15px; margin-bottom: var(--s3);
+}
+.rec-inbox-title { font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 10px; }
+.rec-inbox-item { display: flex; align-items: center; gap: var(--s1); padding: 6px 0; border-top: 1px solid rgba(155,125,58,.12); }
+.rec-inbox-item:first-of-type { border-top: none; }
+.rec-inbox-name { flex: 1; font-family: var(--serif); font-size: 13px; color: var(--ink); }
+.rec-inbox-from { font-size: 10px; color: var(--ink-40); }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MODALS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.overlay {
+  position: fixed; inset: 0; background: rgba(26,17,8,.6);
+  display: flex; align-items: center; justify-content: center; z-index: 999; padding: var(--s3);
+}
+.modal {
+  background: var(--cream); border: 1px solid var(--ink-15); border-radius: var(--r-md);
+  padding: var(--s5) var(--s4); width: 100%; max-width: 360px;
+  box-shadow: 0 32px 80px rgba(26,17,8,.2);
+}
+.modal-title { font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.modal-sub   { font-size: 12px; color: var(--ink-70); line-height: 1.65; margin-bottom: var(--s3); }
+.modal-input {
+  width: 100%; padding: 11px 14px; border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  font-size: 13px; font-family: var(--sans); background: #fff; color: var(--ink);
+  outline: none; margin-bottom: var(--s2); transition: border-color .15s;
+}
+.modal-input::placeholder { font-size: 12px; color: var(--ink-40); }
+.modal-input:focus { border-color: var(--gold); }
+.modal-btn {
+  width: 100%; padding: 12px; background: var(--ink); color: var(--gold-pale);
+  border: none; border-radius: var(--r-sm);
+  font-family: var(--serif); font-size: 14px; font-weight: 700; letter-spacing: 2px;
+  cursor: pointer; transition: opacity .15s;
+}
+.modal-btn:hover { opacity: .85; }
+
+/* 그룹 만들기 모달 */
+.modal-sm {
+  background: var(--cream); border: 1px solid var(--ink-15); border-radius: var(--r-md);
+  padding: var(--s4); width: 100%; max-width: 340px;
+  box-shadow: 0 24px 60px rgba(26,17,8,.18);
+}
+.modal-sm-title { font-family: var(--serif); font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: var(--s2); }
+.emoji-grid { display: grid; grid-template-columns: repeat(6,1fr); gap: 6px; margin-bottom: var(--s2); }
+.eg-btn {
+  aspect-ratio: 1; border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  background: #fff; font-size: 18px; cursor: pointer; transition: all .12s;
+  display: flex; align-items: center; justify-content: center;
+}
+.eg-btn.on { border-color: var(--gold); background: var(--gold-bg); }
+.modal-actions { display: flex; gap: var(--s1); margin-top: var(--s2); }
+.btn-cancel {
+  flex: 1; padding: 10px; border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  background: transparent; font-family: var(--sans); font-size: 12px; color: var(--ink-70); cursor: pointer;
+}
+.btn-confirm {
+  flex: 2; padding: 10px; background: var(--ink); color: var(--gold-pale);
+  border: none; border-radius: var(--r-sm);
+  font-family: var(--serif); font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity .15s;
+}
+.btn-confirm:hover { opacity: .85; }
+
+/* 추천하기 모달 */
+.rec-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--ink-07); }
+.rec-item:first-of-type { border-top: none; }
+.rec-item-name { flex: 1; font-family: var(--serif); font-size: 13px; color: var(--ink); }
+.rec-send-btn {
+  font-size: 11px; padding: 5px 11px; border-radius: var(--r-sm);
+  border: 1px solid var(--ink-15); background: #fff; color: var(--ink-70);
+  cursor: pointer; transition: all .14s; white-space: nowrap;
+}
+.rec-send-btn:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-bg); }
+.rec-send-btn.sent { border-color: var(--green); color: var(--green); background: var(--green-soft); cursor: default; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media (max-width: 600px) {
+  .hd { padding: var(--s2) var(--s3); }
+  .hd-title { font-size: 24px; }
+  .nav { padding: 0 var(--s1); }
+  .nav-btn { font-size: 12px; padding: 13px 12px 11px; }
+  .page { padding: var(--s3) var(--s3) 80px; }
+  .form-row { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: repeat(2,1fr); }
+  .ai-provider-grid { grid-template-columns: repeat(3,1fr); }
+}
+
+/* iOS safe area */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .page { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+}
+
+/* 데이터 관리 */
+.data-box {
+  background: #fff; border: 1px solid var(--ink-07); border-radius: var(--r-md);
+  padding: var(--s3); margin-top: var(--s3);
+}
+.data-box-title { font-family: var(--serif); font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: var(--s2); padding-bottom: var(--s1); border-bottom: 1px solid var(--ink-07); }
+.data-btn-row { display: flex; gap: var(--s1); flex-wrap: wrap; }
+.data-btn {
+  font-family: var(--sans); font-size: 12px; padding: 8px 16px;
+  border: 1px solid var(--ink-15); border-radius: var(--r-sm);
+  background: #fff; color: var(--ink-70); cursor: pointer; transition: all .14s;
+}
+.data-btn:hover { background: var(--cream-2); border-color: var(--ink-40); }
+.data-btn.danger { color: var(--red); }
+.data-btn.danger:hover { background: var(--red-soft); border-color: var(--red); }
+
+/* 모달 스크롤 */
+.overlay { overflow-y: auto; }
+.modal, .modal-sm { max-height: 90vh; overflow-y: auto; }
+</style>
+</head>
+<body>
+
+<!-- 닉네임 모달 -->
+<div class="overlay" id="nick-overlay">
+  <div class="modal">
+    <div class="modal-title">酒錄 🍶</div>
+    <div class="modal-sub">마신 술을 기록하고, 친구들과 취향을 나눠보세요.<br>친구 연결에 사용할 닉네임을 정해주세요.</div>
+    <input class="modal-input" id="nick-inp" placeholder="닉네임 입력" maxlength="16"
+      onkeydown="if(event.key==='Enter')saveNick()">
+    <button class="modal-btn" onclick="saveNick()">시작하기 →</button>
+  </div>
+</div>
+
+<!-- 그룹 만들기 모달 -->
+<div class="overlay" id="grp-overlay" style="display:none">
+  <div class="modal-sm">
+    <div class="modal-sm-title">그룹 만들기</div>
+    <div class="fg" style="margin-bottom:var(--s2)">
+      <div class="fl">그룹 이름</div>
+      <input class="modal-input" id="grp-name-inp" placeholder="예) 금요일 술꾼들" maxlength="20" style="margin-bottom:0">
+    </div>
+    <div class="fl" style="margin-bottom:8px">아이콘</div>
+    <div class="emoji-grid">
+      <button class="eg-btn on" onclick="selEmoji(this,'🍶')">🍶</button>
+      <button class="eg-btn" onclick="selEmoji(this,'🍷')">🍷</button>
+      <button class="eg-btn" onclick="selEmoji(this,'🍺')">🍺</button>
+      <button class="eg-btn" onclick="selEmoji(this,'🥃')">🥃</button>
+      <button class="eg-btn" onclick="selEmoji(this,'🍸')">🍸</button>
+      <button class="eg-btn" onclick="selEmoji(this,'🍾')">🍾</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeGrpModal()">취소</button>
+      <button class="btn-confirm" onclick="createGroup()">만들기</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI 설정 모달 -->
+<div class="overlay" id="ai-overlay" style="display:none">
+  <div class="modal-sm" style="max-width:380px">
+    <div class="modal-sm-title">AI 분류 설정</div>
+    <div style="font-size:12px;color:var(--ink-40);margin-bottom:var(--s2);line-height:1.6">
+      AI가 술 이름만으로 카테고리·도수·맛 태그를 자동으로 채워줘요.<br>
+      본인의 API 키를 입력하면 돼요. 키는 이 기기에만 저장되고 외부로 전송되지 않아요.
+    </div>
+
+    <div class="fl" style="margin-bottom:8px">AI 서비스 선택</div>
+    <div class="ai-provider-grid">
+      <button class="ai-provider-btn on" id="prov-claude" onclick="selProvider('claude')">
+        <div class="ai-provider-logo">🤖</div>
+        <div class="ai-provider-name">Claude</div>
+        <div class="ai-provider-model">Anthropic<br>Haiku 3.5</div>
+      </button>
+      <button class="ai-provider-btn" id="prov-gpt" onclick="selProvider('gpt')">
+        <div class="ai-provider-logo">✦</div>
+        <div class="ai-provider-name">ChatGPT</div>
+        <div class="ai-provider-model">OpenAI<br>GPT-4o mini</div>
+      </button>
+      <button class="ai-provider-btn" id="prov-gemini" onclick="selProvider('gemini')">
+        <div class="ai-provider-logo">◈</div>
+        <div class="ai-provider-name">Gemini</div>
+        <div class="ai-provider-model">Google<br>Gemini 1.5 Flash</div>
+      </button>
+    </div>
+
+    <div class="ai-key-help" id="ai-key-help">
+      <b style="color:var(--ink-70)">Claude API 키 발급 방법</b><br>
+      1. <a onclick="window.open('https://console.anthropic.com')">console.anthropic.com</a> 접속 → 회원가입<br>
+      2. API Keys 메뉴 → Create Key<br>
+      3. 생성된 키(sk-ant-...) 복사 후 아래에 입력
+    </div>
+
+    <div class="fl" style="margin-bottom:8px">API 키 입력</div>
+    <div class="ai-key-inp-row">
+      <input class="modal-input" type="password" id="ai-key-inp" placeholder="API 키를 여기에 붙여넣으세요" style="margin-bottom:0">
+      <button class="ai-key-toggle" id="ai-key-toggle" onclick="toggleKeyVis()">보기</button>
+    </div>
+    <div class="ai-key-warn">
+      <b>주의:</b> API 키는 개인 정보예요. 공용 기기에서는 사용 후 삭제해주세요.<br>
+      키는 이 브라우저에만 저장되며, 분석 요청 시 해당 AI 서비스에만 전달돼요.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAiModal()">취소</button>
+      <button class="btn-confirm" onclick="saveAiKey()">저장하기</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="overlay" id="rec-overlay" style="display:none">
+  <div class="modal-sm">
+    <div class="modal-sm-title">친구에게 추천하기</div>
+    <div style="font-size:12px;color:var(--ink-40);margin-bottom:var(--s2)" id="rec-target-lbl"></div>
+    <div id="rec-friend-list"></div>
+    <div class="modal-actions" style="margin-top:var(--s2)">
+      <button class="btn-cancel" onclick="document.getElementById('rec-overlay').style.display='none'">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- HEADER -->
+  <header class="hd">
+    <div class="hd-wordmark">
+      <div class="hd-title">酒<em>錄</em></div>
+      <div class="hd-subtitle">나의 술 일지</div>
+    </div>
+    <div class="hd-counter">
+      <div class="hd-count" id="hd-count">0</div>
+      <div class="hd-count-lbl">기록</div>
+    </div>
+  </header>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="nav-btn on" onclick="go('list')">목록</button>
+    <button class="nav-btn" onclick="go('add')">기록하기</button>
+    <button class="nav-btn" onclick="go('stats')">취향 분석</button>
+    <button class="nav-btn" onclick="go('friends')">친구</button>
+  </nav>
+
+  <!-- 목록 -->
+  <div class="page on" id="p-list">
+    <div class="sec-title">
+      마셔본 술
+      <span class="sec-title-count" id="list-count"></span>
+    </div>
+    <!-- 검색 & 정렬 -->
+    <div class="search-sort-row">
+      <div class="search-wrap">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M9 9l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <input class="search-inp" id="search-inp" placeholder="술 이름, 카테고리, 맛 태그 검색..."
+          oninput="renderList()">
+      </div>
+      <button class="sort-btn" id="sort-btn" onclick="cycleSort()">
+        <span id="sort-label">최신순</span>
+        <span style="font-size:10px;opacity:.6">↕</span>
+      </button>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div id="card-list"></div>
+  </div>
+
+  <!-- 기록하기 -->
+  <div class="page" id="p-add">
+    <div class="sec-title">새 술 기록하기</div>
+    <div class="form">
+
+      <div class="fg">
+        <div class="fl">술 이름 <span style="color:var(--red)">*</span>
+          <span class="fl-note">— 입력 후 AI 분류 버튼으로 자동으로 채워줘요</span>
+        </div>
+        <!-- AI 키 미설정 배너 -->
+        <div class="ai-setup-banner" id="ai-setup-banner" onclick="openAiModal()" style="display:none">
+          <span class="ai-setup-banner-icon">⚙️</span>
+          <div class="ai-setup-banner-text">
+            <div class="ai-setup-banner-title">AI 분류를 쓰려면 API 키 설정이 필요해요</div>
+            <div class="ai-setup-banner-sub">Claude · ChatGPT · Gemini 중 하나를 선택하고 키를 입력하면 바로 사용할 수 있어요</div>
+          </div>
+          <span class="ai-setup-banner-arrow">→</span>
+        </div>
+        <!-- AI 키 설정 완료 배지 -->
+        <div id="ai-key-set-badge" style="display:none">
+          <span class="ai-key-set-badge">✓ <span id="ai-key-set-text">AI 설정 완료</span> <span style="cursor:pointer;text-decoration:underline;margin-left:4px;color:var(--gold)" onclick="openAiModal()">변경</span></span>
+        </div>
+        <div class="ai-row">
+          <input class="fi" id="f-name" placeholder="예) 화요 25, 야마자키 12년, 샤또 마고 2018"
+            onkeydown="if(event.key==='Enter')aiAnalyze()">
+          <button class="ai-btn" id="ai-btn" onclick="aiAnalyze()">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 1l1.2 3.8H11L8 7l1.2 3.8L6 9l-3.2 1.8L4 7 1 4.8h3.8z" fill="currentColor"/></svg>
+            AI 분류
+          </button>
+        </div>
+        <div class="ai-feedback" id="ai-feedback"></div>
+        <div class="ai-result" id="ai-result"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="fg">
+          <div class="fl">마신 날짜</div>
+          <input class="fi" id="f-date" type="date">
+        </div>
+        <div class="fg">
+          <div class="fl">도수</div>
+          <input class="fi" id="f-abv" placeholder="예) 25%">
+        </div>
+      </div>
+
+      <div class="fg">
+        <div class="fl">카테고리</div>
+        <div class="chip-group" id="cat-chips">
+          <button class="chip" onclick="selCat(this,'막걸리')">막걸리</button>
+          <button class="chip" onclick="selCat(this,'약주·청주')">약주·청주</button>
+          <button class="chip" onclick="selCat(this,'소주')">소주</button>
+          <button class="chip" onclick="selCat(this,'증류식 소주')">증류식 소주</button>
+          <button class="chip" onclick="selCat(this,'과실주')">과실주</button>
+          <button class="chip" onclick="selCat(this,'와인')">와인</button>
+          <button class="chip" onclick="selCat(this,'맥주')">맥주</button>
+          <button class="chip" onclick="selCat(this,'위스키')">위스키</button>
+          <button class="chip" onclick="selCat(this,'고량주')">고량주</button>
+          <button class="chip" onclick="selCat(this,'사케')">사케</button>
+          <button class="chip" onclick="selCat(this,'진·보드카·럼')">진·보드카·럼</button>
+          <button class="chip" onclick="selCat(this,'칵테일')">칵테일</button>
+          <button class="chip" onclick="selCat(this,'기타')">기타</button>
+        </div>
+      </div>
+
+      <div class="fg">
+        <div class="fl">원산지 · 생산자</div>
+        <input class="fi" id="f-origin" placeholder="예) 전북 전주 · 스코틀랜드 아일라 · 보르도">
+      </div>
+
+      <hr class="form-divider">
+
+      <div class="fg">
+        <div class="fl">별점 <span style="color:var(--red)">*</span></div>
+        <div class="star-row" id="star-row">
+          <span class="si" onclick="setR(1)">★</span>
+          <span class="si" onclick="setR(2)">★</span>
+          <span class="si" onclick="setR(3)">★</span>
+          <span class="si" onclick="setR(4)">★</span>
+          <span class="si" onclick="setR(5)">★</span>
+        </div>
+      </div>
+
+      <div class="fg">
+        <div class="fl">맛 한 줄 요약</div>
+        <input class="fi" id="f-sum" placeholder="예) 아카시아 꿀 향에 탄산이 살아있는 봄 막걸리">
+      </div>
+
+      <div class="fg">
+        <div class="fl">맛 프로파일 <span class="fl-note">— 복수 선택</span></div>
+        <div class="chip-group" id="taste-chips">
+          <button class="chip" onclick="togT(this,'달콤한')">달콤한</button>
+          <button class="chip" onclick="togT(this,'산뜻한·시트러스')">산뜻한·시트러스</button>
+          <button class="chip" onclick="togT(this,'묵직한·풀바디')">묵직한·풀바디</button>
+          <button class="chip" onclick="togT(this,'탄산감')">탄산감</button>
+          <button class="chip" onclick="togT(this,'쌉쌀한')">쌉쌀한</button>
+          <button class="chip" onclick="togT(this,'고소한·견과류')">고소한·견과류</button>
+          <button class="chip" onclick="togT(this,'꽃향기')">꽃향기</button>
+          <button class="chip" onclick="togT(this,'과일향')">과일향</button>
+          <button class="chip" onclick="togT(this,'오크·우드')">오크·우드</button>
+          <button class="chip" onclick="togT(this,'훈연·스모키')">훈연·스모키</button>
+          <button class="chip" onclick="togT(this,'흙내음·미네랄')">흙내음·미네랄</button>
+          <button class="chip" onclick="togT(this,'스파이시')">스파이시</button>
+          <button class="chip" onclick="togT(this,'감칠맛·우마미')">감칠맛·우마미</button>
+          <button class="chip" onclick="togT(this,'부드러운·실키')">부드러운·실키</button>
+          <button class="chip" onclick="togT(this,'드라이')">드라이</button>
+          <button class="chip" onclick="togT(this,'허브·약초')">허브·약초</button>
+        </div>
+      </div>
+
+      <div class="fg">
+        <div class="fl">상세 설명</div>
+        <textarea class="fi" id="f-desc" placeholder="양조장, 빈티지, 특징, 개인적인 인상 등 자유롭게"></textarea>
+      </div>
+
+      <hr class="form-divider">
+
+      <div class="form-row">
+        <div class="fg">
+          <div class="fl">페어링 음식</div>
+          <input class="fi" id="f-pair" placeholder="예) 굴, 파전, 스테이크">
+        </div>
+        <div class="fg">
+          <div class="fl">장소 · 함께한 사람</div>
+          <input class="fi" id="f-scene" placeholder="예) 친구들과 홍대 이자카야">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="fg">
+          <div class="fl">가격대</div>
+          <select class="fi" id="f-price">
+            <option value="">선택 안 함</option>
+            <option>~₩10,000</option>
+            <option>₩10,000–30,000</option>
+            <option>₩30,000–70,000</option>
+            <option>₩70,000–150,000</option>
+            <option>₩150,000+</option>
+          </select>
+        </div>
+        <div class="fg">
+          <div class="fl">재구매 의향</div>
+          <div class="rebuy-pair">
+            <button class="rb" id="rb-y" onclick="setRB(true)">👍 또 마시고 싶다</button>
+            <button class="rb" id="rb-n" onclick="setRB(false)">👎 한 번으로 충분</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="submitR()">저장</button>
+    </div>
+  </div>
+
+  <!-- 취향 분석 -->
+  <div class="page" id="p-stats">
+    <div class="sec-title">취향 분석</div>
+    <div id="stats-inner"></div>
+  </div>
+
+  <!-- 친구 -->
+  <div class="page" id="p-friends">
+    <div class="sec-title">친구</div>
+    <div class="social-tabs">
+      <button class="stab on" onclick="setSTab('feed',this)">친구 피드</button>
+      <button class="stab" onclick="setSTab('groups',this)">그룹</button>
+      <button class="stab" onclick="setSTab('compat',this)">취향 궁합</button>
+    </div>
+    <div id="friends-inner"></div>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let db       = JSON.parse(localStorage.getItem('jrnl_db')      || '[]');
+let nickname = localStorage.getItem('jrnl_nick')               || '';
+let myCode   = localStorage.getItem('jrnl_code')               || genCode();
+let friends  = JSON.parse(localStorage.getItem('jrnl_friends') || '[]');
+let groups   = JSON.parse(localStorage.getItem('jrnl_groups')  || '[]');
+
+// AI 설정
+let aiProvider = localStorage.getItem('jrnl_ai_provider') || 'claude';
+let aiKey      = localStorage.getItem('jrnl_ai_key')      || '';
+
+let curFilter = 'all';
+let curSort   = 'recent'; // 'recent' | 'rating' | 'oldest' | 'name'
+let selR = 0, selCatV = '', selTastes = [], selRebuy = null;
+let curSTab = 'feed', friendView = null, groupView = null;
+let selEmj = '🍶', curRecIdx = null;
+
+function genCode() {
+  const c = Math.random().toString(36).slice(2,8).toUpperCase();
+  localStorage.setItem('jrnl_code', c); return c;
+}
+function save()        { localStorage.setItem('jrnl_db',      JSON.stringify(db)); }
+function saveFriends() { localStorage.setItem('jrnl_friends', JSON.stringify(friends)); }
+function saveGroups()  { localStorage.setItem('jrnl_groups',  JSON.stringify(groups)); }
+
+/* ═══════════════════════════════
+   NICK MODAL
+═══════════════════════════════ */
+function checkNick() {
+  document.getElementById('nick-overlay').style.display = nickname ? 'none' : 'flex';
+}
+function saveNick() {
+  const v = document.getElementById('nick-inp').value.trim();
+  if (!v) { alert('닉네임을 입력해주세요'); return; }
+  nickname = v;
+  localStorage.setItem('jrnl_nick', nickname);
+  document.getElementById('nick-overlay').style.display = 'none';
+  publishMyData();
+}
+
+/* ═══════════════════════════════
+   SHARED STORAGE
+═══════════════════════════════ */
+async function publishMyData() {
+  if (!nickname) return;
+  try {
+    await window.storage.set('user:' + myCode,
+      JSON.stringify({ nick: nickname, code: myCode, reviews: db, updated: Date.now() }), true);
+  } catch(e) {}
+}
+async function fetchFriendData(code) {
+  try {
+    const r = await window.storage.get('user:' + code, true);
+    if (r && r.value) return JSON.parse(r.value);
+  } catch(e) {}
+  return null;
+}
+
+/* ═══════════════════════════════
+   NAV
+═══════════════════════════════ */
+function go(p) {
+  document.querySelectorAll('.page').forEach(e => e.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('on'));
+  document.getElementById('p-' + p).classList.add('on');
+  ['list','add','stats','friends'].forEach((t,i) => {
+    if (t === p) document.querySelectorAll('.nav-btn')[i].classList.add('on');
+  });
+  friendView = null; groupView = null;
+  if (p === 'list')    renderList();
+  if (p === 'stats')   renderStats();
+  if (p === 'friends') renderFriends();
+}
+
+function setSTab(t, btn) {
+  curSTab = t;
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  friendView = null; groupView = null;
+  renderFriends();
+}
+
+/* ═══════════════════════════════
+   HELPERS
+═══════════════════════════════ */
+function stars(n, sz = 13) {
+  return [1,2,3,4,5].map(i =>
+    `<span class="${i <= n ? 's-on' : 's-off'}" style="font-size:${sz}px">★</span>`
+  ).join('');
+}
+
+function buildFilters() {
+  const cats = [...new Set(db.map(r => r.cat).filter(Boolean))];
+  document.getElementById('filters').innerHTML =
+    ['all', ...cats].map(c =>
+      `<button class="f-btn${c === curFilter ? ' on' : ''}" onclick="setF('${c}',this)">${c === 'all' ? '전체' : c}</button>`
+    ).join('');
+}
+function setF(f, btn) {
+  curFilter = f;
+  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on'); renderList();
+}
+
+const SORT_CYCLE = ['recent','rating','oldest','name'];
+const SORT_LABEL = { recent:'최신순', rating:'별점순', oldest:'오래된순', name:'이름순' };
+function cycleSort() {
+  const idx = SORT_CYCLE.indexOf(curSort);
+  curSort = SORT_CYCLE[(idx + 1) % SORT_CYCLE.length];
+  document.getElementById('sort-label').textContent = SORT_LABEL[curSort];
+  renderList();
+}
+
+function applySort(arr) {
+  const a = arr.slice();
+  if (curSort === 'recent')  return a.sort((x,y) => (y.ts||0) - (x.ts||0));
+  if (curSort === 'oldest')  return a.sort((x,y) => (x.ts||0) - (y.ts||0));
+  if (curSort === 'rating')  return a.sort((x,y) => y.rating - x.rating || (y.ts||0) - (x.ts||0));
+  if (curSort === 'name')    return a.sort((x,y) => x.name.localeCompare(y.name, 'ko'));
+  return a;
+}
+
+/* ═══════════════════════════════
+   RENDER LIST
+═══════════════════════════════ */
+function renderList() {
+  buildFilters();
+  document.getElementById('hd-count').textContent = db.length;
+
+  // 검색어
+  const q = (document.getElementById('search-inp')?.value || '').trim().toLowerCase();
+
+  // 카테고리 필터
+  let data = curFilter === 'all' ? db : db.filter(r => r.cat === curFilter);
+
+  // 검색 필터
+  if (q) {
+    data = data.filter(r =>
+      r.name.toLowerCase().includes(q) ||
+      (r.cat    || '').toLowerCase().includes(q) ||
+      (r.origin || '').toLowerCase().includes(q) ||
+      (r.summary|| '').toLowerCase().includes(q) ||
+      (r.desc   || '').toLowerCase().includes(q) ||
+      (r.tastes || []).some(t => t.toLowerCase().includes(q))
+    );
+  }
+
+  // 정렬
+  data = applySort(data);
+
+  document.getElementById('list-count').textContent = data.length + '종';
+
+  // 같은 이름별 마신 횟수 집계
+  const nameCnt = {};
+  db.forEach(r => { nameCnt[r.name] = (nameCnt[r.name] || 0) + 1; });
+
+  const el = document.getElementById('card-list');
+  if (!data.length) {
+    el.innerHTML = q
+      ? `<div class="search-empty">
+           <div class="search-empty-msg">"${q}" 검색 결과가 없어요</div>
+           <div class="search-empty-sub">다른 키워드로 검색해보세요</div>
+         </div>`
+      : `<div class="empty">
+           <div class="empty-glyph">🍶</div>
+           <div class="empty-msg">아직 기록이 없어요</div>
+           <div class="empty-sub">새로운 술을 마셨다면 기록을 남겨보세요</div>
+         </div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="cards">` + data.map(r => {
+    const idx = db.indexOf(r);
+    const cnt = nameCnt[r.name] || 1;
+    const hasRec = friends.length > 0;
+    return `<div class="card">
+      <button class="card-del" onclick="delR(${idx})">✕</button>
+      <div class="card-top">
+        <div class="card-name">${r.name}${r.abv ? `<span class="abv">${r.abv}</span>` : ''}</div>
+        <div class="card-stars">${stars(r.rating)}</div>
+      </div>
+      ${r.summary ? `<div class="card-summary">"${r.summary}"</div>` : ''}
+      <div class="card-pills">
+        ${r.cat    ? `<span class="pill p-cat">${r.cat}</span>` : ''}
+        ${r.origin ? `<span class="pill p-region">${r.origin}</span>` : ''}
+        ${(r.tastes || []).slice(0,3).map(t => `<span class="pill p-taste">${t}</span>`).join('')}
+        ${cnt > 1  ? `<span class="count-badge">🍶 ${cnt}번 마심</span>` : ''}
+        ${r.date   ? `<span class="pill p-date">${r.date}</span>` : ''}
+      </div>
+      ${r.desc ? `<div class="card-desc">${r.desc}</div>` : ''}
+      <div class="card-footer">
+        <div class="card-meta-row">
+          ${r.pairing ? `<span class="card-meta-item">🍽 ${r.pairing}</span>` : ''}
+          ${r.scene   ? `<span class="card-meta-item">📍 ${r.scene}</span>` : ''}
+          ${r.price   ? `<span class="card-meta-item">💰 ${r.price}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          ${r.rebuy != null ? `<span class="rebuy-tag ${r.rebuy ? 'rebuy-y' : 'rebuy-n'}">${r.rebuy ? '👍 재구매 의향' : '👎 한 번으로 충분'}</span>` : ''}
+          ${hasRec ? `<button class="rec-inline-btn" onclick="openRecModal(${idx},event)">↗ 추천하기</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function delR(i) {
+  if (confirm('이 기록을 삭제할까요?')) {
+    db.splice(i, 1); save(); publishMyData(); renderList();
+  }
+}
+
+/* ═══════════════════════════════
+   AI 설정 모달
+═══════════════════════════════ */
+const AI_PROVIDERS = {
+  claude: {
+    name: 'Claude (Anthropic)',
+    helpHtml: `<b style="color:var(--ink-70)">Claude API 키 발급</b><br>
+1. <a onclick="window.open('https://console.anthropic.com')">console.anthropic.com</a> 접속 → 회원가입<br>
+2. 좌측 메뉴 API Keys → Create Key<br>
+3. 생성된 키(sk-ant-...) 복사 후 입력`,
+  },
+  gpt: {
+    name: 'ChatGPT (OpenAI)',
+    helpHtml: `<b style="color:var(--ink-70)">OpenAI API 키 발급</b><br>
+1. <a onclick="window.open('https://platform.openai.com/api-keys')">platform.openai.com/api-keys</a> 접속<br>
+2. Create new secret key<br>
+3. 생성된 키(sk-...) 복사 후 입력`,
+  },
+  gemini: {
+    name: 'Gemini (Google)',
+    helpHtml: `<b style="color:var(--ink-70)">Gemini API 키 발급</b><br>
+1. <a onclick="window.open('https://aistudio.google.com/app/apikey')">aistudio.google.com</a> 접속<br>
+2. Create API key<br>
+3. 생성된 키(AIza...) 복사 후 입력`,
+  },
+};
+
+function updateAiBanner() {
+  const banner = document.getElementById('ai-setup-banner');
+  const badge  = document.getElementById('ai-key-set-badge');
+  const setText = document.getElementById('ai-key-set-text');
+  if (!banner || !badge) return;
+  if (aiKey) {
+    banner.style.display = 'none';
+    badge.style.display  = 'block';
+    const pName = AI_PROVIDERS[aiProvider]?.name || 'AI';
+    setText.textContent  = pName + ' 연결됨';
+  } else {
+    banner.style.display = 'flex';
+    badge.style.display  = 'none';
+  }
+}
+
+function openAiModal() {
+  selProvider(aiProvider);
+  const inp = document.getElementById('ai-key-inp');
+  inp.value = aiKey;
+  inp.type  = 'password';
+  document.getElementById('ai-key-toggle').textContent = '보기';
+  document.getElementById('ai-overlay').style.display  = 'flex';
+}
+function closeAiModal() { document.getElementById('ai-overlay').style.display = 'none'; }
+
+function selProvider(p) {
+  aiProvider = p;
+  ['claude','gpt','gemini'].forEach(id => {
+    document.getElementById('prov-' + id).classList.toggle('on', id === p);
+  });
+  document.getElementById('ai-key-help').innerHTML = AI_PROVIDERS[p].helpHtml;
+  document.getElementById('ai-key-inp').value = '';
+  document.getElementById('ai-key-inp').placeholder = p === 'claude' ? 'sk-ant-...' : p === 'gpt' ? 'sk-...' : 'AIza...';
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('ai-key-inp');
+  const btn = document.getElementById('ai-key-toggle');
+  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = '숨기기'; }
+  else                         { inp.type = 'password'; btn.textContent = '보기'; }
+}
+
+function saveAiKey() {
+  const key = document.getElementById('ai-key-inp').value.trim();
+  if (!key) { alert('API 키를 입력해주세요'); return; }
+  aiKey = key;
+  localStorage.setItem('jrnl_ai_provider', aiProvider);
+  localStorage.setItem('jrnl_ai_key',      aiKey);
+  closeAiModal();
+  updateAiBanner();
+  alert('저장됐어요! 이제 AI 분류 버튼을 눌러보세요 ✦');
+}
+
+/* ═══════════════════════════════
+   AI ANALYZE — 멀티 프로바이더
+═══════════════════════════════ */
+const AI_PROMPT = (name) =>
+  `전 세계 주류 전문가로서 아래 술을 분석해. 반드시 순수 JSON만 반환. 백틱·설명·마크다운 절대 없이.\n\n술 이름: "${name}"\n\n{"category":"막걸리|약주·청주|소주|증류식 소주|과실주|와인|맥주|위스키|고량주|사케|진·보드카·럼|칵테일|기타 중 하나","abv":"도수 또는 빈문자열","origin":"원산지·생산자 또는 빈문자열","desc":"특징 2문장 한국어","tastes":["달콤한","산뜻한·시트러스","묵직한·풀바디","탄산감","쌉쌀한","고소한·견과류","꽃향기","과일향","오크·우드","훈연·스모키","흙내음·미네랄","스파이시","감칠맛·우마미","부드러운·실키","드라이","허브·약초"] 중 2~4개 배열,"summary_hint":"맛 한 줄 요약 한국어"}`;
+
+async function callClaude(name) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': aiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 600, messages: [{ role: 'user', content: AI_PROMPT(name) }] })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${res.status}`); }
+  const d = await res.json();
+  return (d.content || []).map(c => c.text || '').join('').trim();
+}
+
+async function callGPT(name) {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + aiKey },
+    body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: 600, messages: [{ role: 'user', content: AI_PROMPT(name) }] })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${res.status}`); }
+  const d = await res.json();
+  return d.choices?.[0]?.message?.content?.trim() || '';
+}
+
+async function callGemini(name) {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: AI_PROMPT(name) }] }] })
+  });
+  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${res.status}`); }
+  const d = await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+}
+
+async function aiAnalyze() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('술 이름을 먼저 입력해주세요'); return; }
+
+  // 키 미설정
+  if (!aiKey) {
+    openAiModal();
+    return;
+  }
+
+  const btn      = document.getElementById('ai-btn');
+  const feedback = document.getElementById('ai-feedback');
+  const result   = document.getElementById('ai-result');
+
+  btn.disabled = true;
+  result.style.display = 'none';
+  feedback.className = 'ai-feedback loading';
+  feedback.innerHTML = `<span class="spinner"></span> AI가 분석하는 중이에요...`;
+
+  try {
+    let raw = '';
+    if      (aiProvider === 'claude') raw = await callClaude(name);
+    else if (aiProvider === 'gpt')    raw = await callGPT(name);
+    else                              raw = await callGemini(name);
+
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    const json = JSON.parse(cleaned);
+
+    if (json.category) {
+      const catBtn = [...document.querySelectorAll('#cat-chips .chip')]
+        .find(b => b.textContent.trim() === json.category);
+      if (catBtn) selCat(catBtn, json.category);
+    }
+    if (json.abv)    document.getElementById('f-abv').value    = json.abv;
+    if (json.origin) document.getElementById('f-origin').value = json.origin;
+    if (json.desc)   document.getElementById('f-desc').value   = json.desc;
+    if (Array.isArray(json.tastes)) {
+      json.tastes.forEach(t => {
+        const btn = [...document.querySelectorAll('#taste-chips .chip')]
+          .find(b => b.textContent.trim() === t);
+        if (btn && !btn.classList.contains('on')) { btn.classList.add('on'); selTastes.push(t); }
+      });
+    }
+
+    result.style.display = 'block';
+    result.innerHTML = `<b>✦ 자동 분류 완료</b> — ${json.desc}${json.summary_hint ? `<br><span style="font-size:11px;color:var(--ink-40);margin-top:6px;display:block">맛 요약 참고 ↗ "${json.summary_hint}"</span>` : ''}`;
+    feedback.className = 'ai-feedback';
+    feedback.innerHTML = '카테고리, 원산지, 설명, 맛 태그를 자동으로 채웠어요. 직접 수정해도 돼요.';
+
+  } catch(e) {
+    console.error('AI error:', e);
+    feedback.className = 'ai-feedback error';
+    // 키 오류인지 판별
+    const msg = e.message || '';
+    if (msg.includes('401') || msg.includes('403') || msg.includes('invalid') || msg.includes('Unauthorized')) {
+      feedback.innerHTML = 'API 키가 올바르지 않아요. <span style="text-decoration:underline;cursor:pointer;color:var(--gold)" onclick="openAiModal()">키 재설정</span>';
+    } else {
+      feedback.innerHTML = `분석 실패: ${msg}. <span style="text-decoration:underline;cursor:pointer;color:var(--gold)" onclick="openAiModal()">설정 확인</span>`;
+    }
+    result.style.display = 'none';
+  }
+
+  btn.disabled = false;
+}
+
+/* ═══════════════════════════════
+   FORM CONTROLS
+═══════════════════════════════ */
+function setR(n) {
+  selR = n;
+  document.querySelectorAll('#star-row .si').forEach((s, i) => s.classList.toggle('on', i < n));
+}
+function selCat(btn, v) {
+  document.querySelectorAll('#cat-chips .chip').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on'); selCatV = v;
+}
+function togT(btn, v) {
+  if (btn.classList.contains('on')) { btn.classList.remove('on'); selTastes = selTastes.filter(t => t !== v); }
+  else { btn.classList.add('on'); selTastes.push(v); }
+}
+function setRB(v) {
+  selRebuy = v;
+  document.getElementById('rb-y').className = 'rb' + (v === true  ? ' y' : '');
+  document.getElementById('rb-n').className = 'rb' + (v === false ? ' n' : '');
+}
+
+function resetForm() {
+  ['f-name','f-date','f-abv','f-sum','f-desc','f-pair','f-scene','f-origin'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-price').value = '';
+  document.getElementById('ai-result').style.display = 'none';
+  document.getElementById('ai-feedback').innerHTML = '';
+  document.getElementById('ai-feedback').className = 'ai-feedback';
+  selR = 0; selCatV = ''; selTastes = []; selRebuy = null;
+  document.querySelectorAll('#star-row .si').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('#cat-chips .chip, #taste-chips .chip').forEach(b => b.classList.remove('on'));
+  document.getElementById('rb-y').className = 'rb';
+  document.getElementById('rb-n').className = 'rb';
+  document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
+}
+
+function submitR() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('술 이름을 입력해주세요'); return; }
+  if (!selR)  { alert('별점을 선택해주세요'); return; }
+  db.push({
+    name,
+    date:    document.getElementById('f-date').value,
+    abv:     document.getElementById('f-abv').value.trim(),
+    cat:     selCatV,
+    origin:  document.getElementById('f-origin').value.trim(),
+    rating:  selR,
+    summary: document.getElementById('f-sum').value.trim(),
+    tastes:  [...selTastes],
+    desc:    document.getElementById('f-desc').value.trim(),
+    pairing: document.getElementById('f-pair').value.trim(),
+    scene:   document.getElementById('f-scene').value.trim(),
+    price:   document.getElementById('f-price').value,
+    rebuy:   selRebuy,
+    ts:      Date.now(),
+  });
+  save(); publishMyData(); resetForm();
+  alert('저장되었습니다 🥂');
+  go('list');
+}
+
+/* ═══════════════════════════════
+   STATS
+═══════════════════════════════ */
+function renderStats() {
+  const el = document.getElementById('stats-inner');
+  if (!db.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-glyph">📊</div><div class="empty-msg">기록이 없어요</div><div class="empty-sub">술을 기록하면 취향 분석이 시작돼요</div></div>`;
+    return;
+  }
+  const total = db.length;
+  const avg   = (db.reduce((a,r) => a + r.rating, 0) / total).toFixed(1);
+  const rebuyY = db.filter(r => r.rebuy === true).length;
+  const cats  = {}; db.forEach(r => { if (r.cat) cats[r.cat] = (cats[r.cat] || 0) + 1; });
+  const sortCats = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  const maxC = Math.max(...Object.values(cats), 1);
+  const tastes = {}; db.forEach(r => (r.tastes||[]).forEach(t => { tastes[t] = (tastes[t]||0)+1; }));
+  const sortT = Object.entries(tastes).sort((a,b) => b[1]-a[1]).slice(0,8);
+  const maxT = Math.max(...sortT.map(x => x[1]), 1);
+  const top3 = db.slice().sort((a,b) => b.rating - a.rating || b.ts - a.ts).slice(0,3);
+
+  el.innerHTML = `
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-n">${total}</div><div class="stat-l">기록한 술</div></div>
+    <div class="stat-box"><div class="stat-n">⭐ ${avg}</div><div class="stat-l">평균 별점</div></div>
+    <div class="stat-box"><div class="stat-n">${Object.keys(cats).length}</div><div class="stat-l">카테고리</div></div>
+    <div class="stat-box"><div class="stat-n">${rebuyY}</div><div class="stat-l">재구매 의향</div></div>
+  </div>
+  ${sortCats.length ? `<div class="chart-box">
+    <div class="chart-title">카테고리별 기록</div>
+    ${sortCats.map(([c,n]) => `
+      <div class="bar-row">
+        <div class="bar-lbl">${c}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxC*100)}%"><span class="bar-val">${n}</span></div></div>
+      </div>`).join('')}
+  </div>` : ''}
+  ${sortT.length ? `<div class="chart-box">
+    <div class="chart-title">자주 느낀 맛 프로파일</div>
+    ${sortT.map(([t,n]) => `
+      <div class="bar-row">
+        <div class="bar-lbl" style="font-size:10.5px">${t}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(n/maxT*100)}%"><span class="bar-val">${n}</span></div></div>
+      </div>`).join('')}
+  </div>` : ''}
+  ${top3.length ? `<div class="chart-box">
+    <div class="chart-title">나의 Top 3</div>
+    <div class="top-list">
+      ${top3.map((r,i) => `
+        <div class="top-item">
+          <div class="top-rank">${i+1}</div>
+          <div class="top-info">
+            <div class="top-name">${r.name}</div>
+            <div class="top-sub">${[r.cat, r.origin].filter(Boolean).join(' · ')}</div>
+          </div>
+          <div class="top-score">${r.rating}<small>/5</small></div>
+        </div>`).join('')}
+    </div>
+  </div>` : ''}`;
+}
+
+/* ═══════════════════════════════
+   FRIENDS — 탭별 렌더
+═══════════════════════════════ */
+async function renderFriends() {
+  await publishMyData();
+  const el = document.getElementById('friends-inner');
+  if (curSTab === 'feed')   await renderFeedTab(el);
+  else if (curSTab === 'groups') await renderGroupsTab(el);
+  else await renderCompatTab(el);
+}
+
+/* ── 친구 피드 탭 ── */
+async function renderFeedTab(el) {
+  if (friendView) {
+    const f = friendView, data = f._data || [];
+    el.innerHTML = `
+    <div class="fv-header">
+      <div class="fv-avatar">${(f._nick||f.nick)[0]}</div>
+      <div>
+        <div class="fv-name">${f._nick||f.nick}의 술 일지</div>
+        <div class="fv-sub">${data.length}개의 기록</div>
+      </div>
+      <button class="back-btn" onclick="friendView=null;renderFriends()">← 뒤로</button>
+    </div>
+    <div class="cards">
+      ${data.length ? data.slice().reverse().map(r => `
+        <div class="card" style="cursor:default">
+          <div class="card-top">
+            <div class="card-name">${r.name}${r.abv ? `<span class="abv">${r.abv}</span>` : ''}</div>
+            <div class="card-stars">${stars(r.rating)}</div>
+          </div>
+          ${r.summary ? `<div class="card-summary">"${r.summary}"</div>` : ''}
+          <div class="card-pills">
+            ${r.cat    ? `<span class="pill p-cat">${r.cat}</span>` : ''}
+            ${r.origin ? `<span class="pill p-region">${r.origin}</span>` : ''}
+            ${(r.tastes||[]).slice(0,2).map(t => `<span class="pill p-taste">${t}</span>`).join('')}
+            ${r.date   ? `<span class="pill p-date">${r.date}</span>` : ''}
+          </div>
+        </div>`).join('')
+      : `<div class="empty"><div class="empty-glyph">🍶</div><div class="empty-msg">기록이 없어요</div></div>`}
+    </div>`;
+    return;
+  }
+
+  const loaded = await Promise.all(friends.map(async f => {
+    const d = await fetchFriendData(f.code);
+    return { ...f, _data: d ? d.reviews : [], _nick: d ? d.nick : f.nick };
+  }));
+  const feed = loaded
+    .flatMap(f => (f._data || []).map(r => ({ ...r, _by: f._nick || f.nick })))
+    .sort((a,b) => (b.ts||0) - (a.ts||0))
+    .slice(0, 12);
+
+  el.innerHTML = `
+  <div class="my-profile">
+    <div class="profile-avatar">${nickname ? nickname[0] : '?'}</div>
+    <div class="profile-info">
+      <div class="profile-name">${nickname || '닉네임 없음'}</div>
+      <div class="profile-code">내 코드: <b>${myCode}</b> — 친구에게 알려주세요</div>
+    </div>
+    <button class="copy-btn" onclick="copyCode()">코드 복사</button>
+  </div>
+
+  <div class="fg" style="margin-bottom:var(--s3)">
+    <div class="fl">친구 코드로 추가</div>
+    <div class="add-row">
+      <input class="fi" id="friend-code-inp" placeholder="6자리 코드 입력" maxlength="8"
+        onkeydown="if(event.key==='Enter')addFriend()">
+      <button class="add-btn" onclick="addFriend()">추가하기</button>
+    </div>
+  </div>
+
+  ${loaded.length ? `
+    <div class="fl" style="margin-bottom:var(--s1)">친구 목록 (${loaded.length}명)</div>
+    ${loaded.map((f,i) => `
+      <div class="friend-card" onclick="viewFriend(${i},event)">
+        <div class="f-avatar">${(f._nick||f.nick)[0]}</div>
+        <div class="f-info">
+          <div class="f-name">${f._nick||f.nick}</div>
+          <div class="f-count">${f._data.length}개의 기록</div>
+        </div>
+        <button class="f-remove" onclick="removeFriend(${i},event)">✕</button>
+      </div>`).join('')}
+    ${feed.length ? `
+      <div class="feed-section-title">친구들의 최근 기록</div>
+      <div class="cards">
+        ${feed.map(r => `
+          <div class="card" style="cursor:default">
+            <div class="card-top">
+              <div class="card-name">${r.name}${r.abv ? `<span class="abv">${r.abv}</span>` : ''}</div>
+              <div class="card-stars">${stars(r.rating)}</div>
+            </div>
+            ${r.summary ? `<div class="card-summary">"${r.summary}"</div>` : ''}
+            <div class="card-pills">
+              ${r.cat ? `<span class="pill p-cat">${r.cat}</span>` : ''}
+              ${r.origin ? `<span class="pill p-region">${r.origin}</span>` : ''}
+              ${(r.tastes||[]).slice(0,2).map(t => `<span class="pill p-taste">${t}</span>`).join('')}
+            </div>
+            <div class="card-footer">
+              <span></span>
+              <span class="by-tag"><span class="by-dot"></span>${r._by}</span>
+            </div>
+          </div>`).join('')}
+      </div>` : ''}
+  ` : `<div class="empty"><div class="empty-glyph">👥</div><div class="empty-msg">아직 친구가 없어요</div><div class="empty-sub">코드를 공유해 친구를 추가해보세요</div></div>`}`;
+}
+
+/* ── 그룹 탭 ── */
+async function renderGroupsTab(el) {
+  if (groupView) {
+    const g = groupView;
+    const memberData = await Promise.all((g.members || []).map(async code => {
+      const d = await fetchFriendData(code);
+      return { code, nick: d ? d.nick : '알 수 없음', reviews: d ? d.reviews : [] };
+    }));
+    const allMembers = [{ code: myCode, nick: nickname, reviews: db }, ...memberData.filter(m => m.code !== myCode)];
+    const feed = allMembers
+      .flatMap(m => m.reviews.map(r => ({ ...r, _by: m.nick })))
+      .sort((a,b) => (b.ts||0) - (a.ts||0))
+      .slice(0, 20);
+
+    el.innerHTML = `
+    <div class="grp-header">
+      <div class="grp-icon-lg">${g.icon}</div>
+      <div>
+        <div class="grp-name">${g.name}</div>
+        <div class="grp-sub">${allMembers.length}명 · 그룹 피드</div>
+      </div>
+      <button class="back-btn" onclick="groupView=null;renderFriends()">← 뒤로</button>
+    </div>
+    <div class="fl" style="margin-bottom:8px">멤버</div>
+    <div class="member-pills" style="margin-bottom:var(--s3)">
+      ${allMembers.map(m => `
+        <div class="member-pill">
+          <div class="member-pill-av">${m.nick[0]}</div>
+          <span class="member-pill-name">${m.nick}</span>
+          ${m.code === myCode ? `<span class="member-pill-me">나</span>` : ''}
+        </div>`).join('')}
+    </div>
+    ${feed.length ? `
+      <div class="feed-section-title">그룹 피드 (${feed.length}개)</div>
+      <div class="cards">
+        ${feed.map(r => `
+          <div class="card" style="cursor:default">
+            <div class="card-top">
+              <div class="card-name">${r.name}${r.abv ? `<span class="abv">${r.abv}</span>` : ''}</div>
+              <div class="card-stars">${stars(r.rating)}</div>
+            </div>
+            ${r.summary ? `<div class="card-summary">"${r.summary}"</div>` : ''}
+            <div class="card-pills">
+              ${r.cat ? `<span class="pill p-cat">${r.cat}</span>` : ''}
+              ${r.origin ? `<span class="pill p-region">${r.origin}</span>` : ''}
+              ${(r.tastes||[]).slice(0,2).map(t => `<span class="pill p-taste">${t}</span>`).join('')}
+              ${r.date ? `<span class="pill p-date">${r.date}</span>` : ''}
+            </div>
+            ${r.desc ? `<div class="card-desc">${r.desc}</div>` : ''}
+            <div class="card-footer">
+              <span></span>
+              <span class="by-tag"><span class="by-dot"></span>${r._by}</span>
+            </div>
+          </div>`).join('')}
+      </div>`
+    : `<div class="empty"><div class="empty-glyph">🍶</div><div class="empty-msg">아직 기록이 없어요</div></div>`}`;
+    return;
+  }
+
+  el.innerHTML = `
+  <button class="btn-submit" style="margin-bottom:var(--s3)" onclick="openGrpModal()">+ 새 그룹 만들기</button>
+  ${groups.length ? groups.map((g,i) => `
+    <div class="group-card" onclick="openGroup(${i})">
+      <button class="group-del" onclick="delGroup(${i},event)">✕</button>
+      <div class="group-card-top">
+        <div class="group-icon">${g.icon}</div>
+        <div class="group-name">${g.name}</div>
+      </div>
+      <div class="group-meta">
+        <span>친구 ${g.members.length}명 포함</span>
+        <span>코드 <b style="font-family:var(--serif);color:var(--gold)">${g.code}</b></span>
+      </div>
+    </div>`).join('')
+  : `<div class="empty"><div class="empty-glyph">🍻</div><div class="empty-msg">아직 그룹이 없어요</div><div class="empty-sub">같이 마시는 친구들과 그룹을 만들어보세요</div></div>`}`;
+}
+
+async function openGroup(i) {
+  groupView = groups[i]; renderFriends();
+}
+function delGroup(i, e) {
+  e.stopPropagation();
+  if (confirm('그룹을 삭제할까요?')) { groups.splice(i,1); saveGroups(); renderFriends(); }
+}
+function openGrpModal() {
+  document.getElementById('grp-overlay').style.display = 'flex';
+  document.getElementById('grp-name-inp').value = '';
+  selEmj = '🍶';
+  document.querySelectorAll('.eg-btn').forEach((b,i) => b.classList.toggle('on', i===0));
+}
+function closeGrpModal() { document.getElementById('grp-overlay').style.display = 'none'; }
+function selEmoji(btn, e) {
+  selEmj = e;
+  document.querySelectorAll('.eg-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function createGroup() {
+  const name = document.getElementById('grp-name-inp').value.trim();
+  if (!name) { alert('그룹 이름을 입력해주세요'); return; }
+  const code = Math.random().toString(36).slice(2,7).toUpperCase();
+  groups.push({ name, icon: selEmj, code, members: friends.map(f => f.code), ts: Date.now() });
+  saveGroups(); closeGrpModal(); renderFriends();
+  alert(`그룹 "${name}" 생성 완료!\n친구들에게 코드 ${code}를 알려주세요 🍻`);
+}
+
+/* ── 취향 궁합 탭 ── */
+async function renderCompatTab(el) {
+  const loaded = await Promise.all(friends.map(async f => {
+    const d = await fetchFriendData(f.code);
+    return { nick: d ? d.nick : f.nick, tastes: (d ? d.reviews : []).flatMap(r => r.tastes || []) };
+  }));
+  if (!loaded.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-glyph">💫</div><div class="empty-msg">친구를 먼저 추가해주세요</div><div class="empty-sub">친구 피드 탭에서 친구를 추가하면 취향 궁합을 볼 수 있어요</div></div>`;
+    return;
+  }
+  const myTastes = db.flatMap(r => r.tastes || []);
+  const mySet = new Set(myTastes);
+  const results = loaded.map(f => {
+    const fSet = new Set(f.tastes);
+    const common = [...mySet].filter(t => fSet.has(t));
+    const union = new Set([...mySet, ...fSet]);
+    const pct = union.size ? Math.round(common.length / union.size * 100) : 0;
+    return { nick: f.nick, pct, common: common.slice(0,4) };
+  }).sort((a,b) => b.pct - a.pct);
+
+  el.innerHTML = `
+  <div class="fl" style="margin-bottom:var(--s2)">친구와의 취향 일치율</div>
+  <div class="compat-grid">
+    ${results.map(r => `
+      <div class="compat-box">
+        <div class="compat-pct">${r.pct}%</div>
+        <div class="compat-name">${r.nick}</div>
+        <div class="compat-common">${r.common.length ? r.common.join('<br>') : '공통 태그 없음'}</div>
+        <div class="compat-bar"><div class="compat-fill" style="width:${r.pct}%"></div></div>
+      </div>`).join('')}
+  </div>
+  <div style="font-size:11px;color:var(--ink-40);text-align:center;margin-top:var(--s1)">맛 프로파일 태그 겹치는 비율로 계산해요</div>`;
+}
+
+/* ── 추천하기 ── */
+function openRecModal(idx, e) {
+  e.stopPropagation();
+  if (!friends.length) { alert('친구를 먼저 추가해주세요'); return; }
+  curRecIdx = idx;
+  const r = db[idx];
+  document.getElementById('rec-target-lbl').textContent = `"${r.name}" 을(를) 추천할 친구를 고르세요`;
+  document.getElementById('rec-friend-list').innerHTML = friends.map((f,i) => `
+    <div class="rec-item">
+      <div class="f-avatar" style="width:30px;height:30px;font-size:12px">${(f.nick||'?')[0]}</div>
+      <div class="rec-item-name">${f.nick}</div>
+      <button class="rec-send-btn" id="rsb-${i}" onclick="sendRec(${i})">추천 보내기</button>
+    </div>`).join('');
+  document.getElementById('rec-overlay').style.display = 'flex';
+}
+
+async function sendRec(fi) {
+  const btn = document.getElementById('rsb-' + fi);
+  if (btn.classList.contains('sent')) return;
+  const f = friends[fi];
+  const r = db[curRecIdx];
+  btn.textContent = '전송 중...'; btn.disabled = true;
+  try {
+    await window.storage.set(
+      'rec:' + f.code + ':' + myCode,
+      JSON.stringify({ name: r.name, cat: r.cat || '', from: nickname, fromCode: myCode, ts: Date.now() }),
+      true
+    );
+    btn.textContent = '✓ 전송 완료'; btn.classList.add('sent');
+  } catch(e) {
+    btn.textContent = '추천 보내기'; btn.disabled = false;
+    alert('전송에 실패했어요: ' + e.message);
+  }
+}
+
+/* ── 공통 친구 함수 ── */
+async function addFriend() {
+  const code = document.getElementById('friend-code-inp').value.trim().toUpperCase();
+  if (!code) { alert('코드를 입력해주세요'); return; }
+  if (code === myCode) { alert('내 코드는 추가할 수 없어요'); return; }
+  if (friends.find(f => f.code === code)) { alert('이미 추가된 친구예요'); return; }
+  const data = await fetchFriendData(code);
+  friends.push({ code, nick: data ? data.nick : '알 수 없음' });
+  saveFriends();
+  document.getElementById('friend-code-inp').value = '';
+  renderFriends();
+}
+
+function viewFriend(i, e) {
+  if (e.target.classList.contains('f-remove')) return;
+  const f = friends[i];
+  fetchFriendData(f.code).then(d => {
+    friendView = { ...f, _data: d ? d.reviews : [], _nick: d ? d.nick : f.nick };
+    renderFriends();
+  });
+}
+
+function removeFriend(i, e) {
+  e.stopPropagation();
+  if (confirm('친구를 삭제할까요?')) { friends.splice(i,1); saveFriends(); renderFriends(); }
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(myCode)
+    .then(() => alert(`코드 "${myCode}"가 복사됐어요! 친구에게 보내주세요 🍶`))
+    .catch(() => alert(`내 코드: ${myCode}`));
+}
+
+/* ═══════════════════════════════
+   데이터 관리
+═══════════════════════════════ */
+function exportData() {
+  const payload = { version: 1, exported: new Date().toISOString(), reviews: db };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `주록_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      const reviews = parsed.reviews || parsed; // 배열이거나 {reviews:[...]}
+      if (!Array.isArray(reviews)) throw new Error('형식 오류');
+      if (!confirm(`${reviews.length}개의 기록을 가져올까요? 기존 기록에 추가돼요.`)) return;
+      // 중복 제거: ts 기준
+      const existingTs = new Set(db.map(r => r.ts));
+      const newOnes = reviews.filter(r => !existingTs.has(r.ts));
+      db = [...db, ...newOnes];
+      save(); publishMyData(); renderList();
+      alert(`${newOnes.length}개의 기록을 가져왔어요.`);
+    } catch(err) {
+      alert('파일을 읽을 수 없어요. 올바른 JSON 파일인지 확인해주세요.');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function clearData() {
+  if (!confirm(`모든 기록(${db.length}개)을 삭제할까요? 되돌릴 수 없어요.`)) return;
+  if (!confirm('정말 삭제할까요?')) return;
+  db = []; save(); publishMyData(); renderList(); renderStats();
+  alert('모든 기록이 삭제됐어요.');
+}
+
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+document.getElementById('f-date').value = new Date().toISOString().slice(0,10);
+checkNick();
+renderList();
+updateAiBanner();
+</script>
+</body>
+</html>
