@@ -1368,9 +1368,15 @@ async function addFriend() {
   const { data: existing } = await supa.from('friends').select('id').eq('user_id', currentProfile.id).eq('friend_id', target.id).maybeSingle();
   if (existing) { hideLoading(); alert('이미 추가된 친구예요'); return; }
 
-  await supa.from('friends').insert({ user_id: currentProfile.id, friend_id: target.id });
+  // 양방향으로 동시에 추가
+  await supa.from('friends').upsert([
+    { user_id: currentProfile.id, friend_id: target.id },
+    { user_id: target.id, friend_id: currentProfile.id },
+  ], { onConflict: 'user_id,friend_id', ignoreDuplicates: true });
+
   document.getElementById('friend-code-inp').value = '';
   hideLoading(); renderFriends();
+  alert(`${target.nickname}님과 친구가 됐어요! 🍶`);
 }
 
 function viewFriend(id, nick) {
@@ -1380,9 +1386,10 @@ function viewFriend(id, nick) {
 
 async function removeFriend(friendId, e) {
   e.stopPropagation();
-  if (!confirm('친구를 삭제할까요?')) return;
+  if (!confirm('친구를 삭제할까요? 상대방 목록에서도 삭제돼요.')) return;
   showLoading('삭제 중...');
-  await supa.from('friends').delete().eq('user_id', currentProfile.id).eq('friend_id', friendId);
+  // 양방향 모두 삭제
+  await supa.from('friends').delete().or(`and(user_id.eq.${currentProfile.id},friend_id.eq.${friendId}),and(user_id.eq.${friendId},friend_id.eq.${currentProfile.id})`);
   hideLoading(); renderFriends();
 }
 
@@ -1406,7 +1413,7 @@ async function renderGroupsTab(el) {
 
     el.innerHTML = `<div class="grp-header">
       <div class="grp-icon-lg">${g.icon}</div>
-      <div><div class="grp-name">${g.name}</div><div class="grp-sub">${members.length}명 · 그룹 피드</div></div>
+      <div><div class="grp-name">${g.name}</div><div class="grp-sub">${members.length + 1}명 · 그룹 피드</div></div>
       <button class="back-btn" onclick="groupView=null;renderFriends()">← 뒤로</button>
     </div>
     ${g.owner_id === currentProfile.id ? `<button class="btn-submit" style="margin-bottom:var(--s3);padding:10px" onclick="openGrpEditModal('${g.id}')">멤버 관리</button>` : ''}
@@ -1426,26 +1433,64 @@ async function renderGroupsTab(el) {
   }
 
   showLoading('그룹 불러오는 중...');
-  // 내가 만든 그룹 + 멤버로 있는 그룹
   const { data: ownedGroups } = await supa.from('groups').select('*').eq('owner_id', currentProfile.id);
   const { data: memberGroupRows } = await supa.from('group_members').select('group_id, groups(*)').eq('user_id', currentProfile.id);
   const memberGroups = (memberGroupRows||[]).map(r=>r.groups).filter(g=>g&&g.owner_id!==currentProfile.id);
   const allGroups = [...(ownedGroups||[]), ...memberGroups];
+
+  // 각 그룹의 멤버 수 조회 (group_members 기준 + 그룹장 1명)
+  let memberCounts = {};
+  if (allGroups.length) {
+    const { data: countRows } = await supa.from('group_members').select('group_id').in('group_id', allGroups.map(g=>g.id));
+    (countRows||[]).forEach(r => { memberCounts[r.group_id] = (memberCounts[r.group_id]||0)+1; });
+  }
   hideLoading();
 
-  el.innerHTML = `<button class="btn-submit" style="margin-bottom:var(--s3)" onclick="openGrpModal()">+ 새 그룹 만들기</button>
-  ${allGroups.length ? allGroups.map(g=>`
-    <div class="group-card" onclick="openGroup('${g.id}','${g.name}','${g.icon}','${g.owner_id}')">
+  el.innerHTML = `
+  <div style="display:flex;gap:var(--s1);margin-bottom:var(--s3)">
+    <button class="btn-submit" style="flex:1" onclick="openGrpModal()">+ 새 그룹 만들기</button>
+    <button class="btn-submit" style="flex:1;background:var(--cream-2);color:var(--ink-70);border:1px solid var(--ink-15)" onclick="showJoinGroup()">코드로 참여</button>
+  </div>
+  <div id="join-grp-row" style="display:none;margin-bottom:var(--s3)">
+    <div class="add-row">
+      <input class="fi" id="join-grp-inp" placeholder="그룹 코드 입력" maxlength="8" style="text-transform:uppercase" onkeydown="if(event.key==='Enter')joinGroup()">
+      <button class="add-btn" onclick="joinGroup()">참여하기</button>
+    </div>
+  </div>
+  ${allGroups.length ? allGroups.map(g=>{
+    const cnt = (memberCounts[g.id]||0) + 1; // 멤버 + 그룹장
+    return `<div class="group-card" onclick="openGroup('${g.id}','${g.name}','${g.icon}','${g.owner_id}')">
       ${g.owner_id===currentProfile.id?`<button class="group-del" onclick="delGroup('${g.id}',event)">✕</button>`:''}
       <div class="group-card-top"><div class="group-icon">${g.icon}</div><div class="group-name">${g.name}</div></div>
-      <div class="group-meta"><span>${g.owner_id===currentProfile.id?'내 그룹':'참여 중'}</span><span>코드 <b style="font-family:var(--serif);color:var(--gold)">${g.group_code}</b></span></div>
-    </div>`).join('')
-  : `<div class="empty"><div class="empty-glyph">🍻</div><div class="empty-msg">아직 그룹이 없어요</div><div class="empty-sub">같이 마시는 친구들과 그룹을 만들어보세요</div></div>`}`;
+      <div class="group-meta"><span>${g.owner_id===currentProfile.id?'내 그룹':'참여 중'}</span><span>${cnt}명</span><span>코드 <b style="font-family:var(--serif);color:var(--gold)">${g.group_code}</b></span></div>
+    </div>`;}).join('')
+  : `<div class="empty"><div class="empty-glyph">🍻</div><div class="empty-msg">아직 그룹이 없어요</div><div class="empty-sub">새 그룹을 만들거나 코드로 참여해보세요</div></div>`}`;
 }
 
 async function openGroup(id, name, icon, ownerId) {
   groupView = { id, name, icon, owner_id: ownerId };
   renderFriends();
+}
+
+function showJoinGroup() {
+  const row = document.getElementById('join-grp-row');
+  row.style.display = row.style.display === 'none' ? 'block' : 'none';
+}
+
+async function joinGroup() {
+  const code = document.getElementById('join-grp-inp').value.trim().toUpperCase();
+  if (!code) { alert('그룹 코드를 입력해주세요'); return; }
+
+  showLoading('그룹 찾는 중...');
+  const { data: grp } = await supa.from('groups').select('*').eq('group_code', code).maybeSingle();
+  if (!grp) { hideLoading(); alert('해당 코드의 그룹을 찾을 수 없어요'); return; }
+
+  const { data: existing } = await supa.from('group_members').select('group_id').eq('group_id', grp.id).eq('user_id', currentProfile.id).maybeSingle();
+  if (existing || grp.owner_id === currentProfile.id) { hideLoading(); alert('이미 참여 중인 그룹이에요'); return; }
+
+  await supa.from('group_members').insert({ group_id: grp.id, user_id: currentProfile.id });
+  hideLoading(); renderFriends();
+  alert(`"${grp.name}" 그룹에 참여했어요! 🍻`);
 }
 async function delGroup(id, e) {
   e.stopPropagation();
@@ -1460,9 +1505,14 @@ async function openGrpModal() {
   document.getElementById('grp-name-inp').value = '';
   selEmj = '🍶';
   document.querySelectorAll('.eg-btn').forEach((b,i)=>b.classList.toggle('on',i===0));
-  // 친구 목록 불러오기
-  const { data: friendRows } = await supa.from('friends').select('friend_id, profiles(id, nickname)').eq('user_id', currentProfile.id);
-  const friends = (friendRows||[]).map(r=>r.profiles);
+  // 친구 목록 — 두 단계로 조회
+  const { data: friendRows } = await supa.from('friends').select('friend_id').eq('user_id', currentProfile.id);
+  const friendIds = (friendRows||[]).map(r=>r.friend_id);
+  let friends = [];
+  if (friendIds.length) {
+    const { data: profiles } = await supa.from('profiles').select('id, nickname').in('id', friendIds);
+    friends = profiles || [];
+  }
   const list = document.getElementById('grp-member-list');
   if (!friends.length) {
     list.innerHTML = `<div style="font-size:12px;color:var(--ink-40);padding:8px 0">친구를 먼저 추가해야 멤버를 선택할 수 있어요</div>`;
@@ -1502,9 +1552,14 @@ async function openGrpEditModal(groupId) {
   // 현재 멤버
   const { data: currentMembers } = await supa.from('group_members').select('user_id').eq('group_id', groupId);
   const currentMemberIds = new Set((currentMembers||[]).map(m=>m.user_id));
-  // 친구 목록
-  const { data: friendRows } = await supa.from('friends').select('friend_id, profiles(id, nickname)').eq('user_id', currentProfile.id);
-  const friends = (friendRows||[]).map(r=>r.profiles);
+  // 친구 목록 — 두 단계로 조회
+  const { data: friendRows } = await supa.from('friends').select('friend_id').eq('user_id', currentProfile.id);
+  const friendIds = (friendRows||[]).map(r=>r.friend_id);
+  let friends = [];
+  if (friendIds.length) {
+    const { data: profiles } = await supa.from('profiles').select('id, nickname').in('id', friendIds);
+    friends = profiles || [];
+  }
 
   const list = document.getElementById('grp-edit-member-list');
   if (!friends.length) {
