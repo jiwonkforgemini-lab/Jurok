@@ -785,15 +785,15 @@ async function doSignup() {
     const { data: existing } = await supa.from('profiles').select('id').eq('nickname', nick).maybeSingle();
     if (existing) { err.textContent = '이미 사용 중인 닉네임이에요'; btn.disabled=false; btn.textContent='가입하기'; return; }
 
-    // 이메일 있으면 실제 이메일 사용, 없으면 가상 이메일
-    const nickSlug = nick.toLowerCase().replace(/[^a-z0-9]/g,'') || 'user' + Date.now();
-    const signupEmail = email || nickSlug + '@jurok.app';
+    // 이메일 있으면 실제 이메일 사용, 없으면 가상 이메일 (UUID 기반)
+    const uid = crypto.randomUUID().replace(/-/g,'').slice(0,16);
+    const signupEmail = email || `jurok.${uid}@gmail.com`;
     const { data, error } = await supa.auth.signUp({ email: signupEmail, password: pw });
     if (error) throw error;
 
     currentUser = data.user;
     const friendCode = Math.random().toString(36).slice(2,8).toUpperCase();
-    const { error: pErr } = await supa.from('profiles').insert({ id: currentUser.id, nickname: nick, friend_code: friendCode });
+    const { error: pErr } = await supa.from('profiles').insert({ id: currentUser.id, nickname: nick, friend_code: friendCode, auth_email: signupEmail });
     if (pErr) throw pErr;
 
     await loadProfile();
@@ -816,16 +816,18 @@ async function doLogin() {
   btn.disabled = true; btn.textContent = '처리 중...';
 
   try {
-    const nickSlug = nick.toLowerCase().replace(/[^a-z0-9]/g,'') || 'user';
-    const fakeEmail = nickSlug + '@jurok.app';
-    const { data, error } = await supa.auth.signInWithPassword({ email: fakeEmail, password: pw });
+    // 닉네임으로 auth_email 조회
+    const { data: profile } = await supa.from('profiles').select('auth_email').eq('nickname', nick).maybeSingle();
+    if (!profile) { err.textContent = '존재하지 않는 닉네임이에요'; btn.disabled=false; btn.textContent='로그인'; return; }
+
+    const { data, error } = await supa.auth.signInWithPassword({ email: profile.auth_email, password: pw });
     if (error) throw error;
     currentUser = data.user;
     await loadProfile();
     document.getElementById('setup-screen').style.display = 'none';
     showApp();
   } catch(e) {
-    err.textContent = '닉네임 또는 비밀번호가 올바르지 않아요';
+    err.textContent = '비밀번호가 올바르지 않아요';
   }
   btn.disabled = false; btn.textContent = '로그인';
 }
