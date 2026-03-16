@@ -827,35 +827,25 @@ select.fi {
       본인의 API 키를 입력하면 돼요. 키는 이 기기에만 저장되고 외부로 전송되지 않아요.
     </div>
 
-    <div class="fl" style="margin-bottom:8px">AI 서비스 선택</div>
-    <div class="ai-provider-grid">
-      <button class="ai-provider-btn on" id="prov-claude" onclick="selProvider('claude')">
-        <div class="ai-provider-logo">🤖</div>
-        <div class="ai-provider-name">Claude</div>
-        <div class="ai-provider-model">Anthropic<br>Haiku 3.5</div>
-      </button>
-      <button class="ai-provider-btn" id="prov-gpt" onclick="selProvider('gpt')">
-        <div class="ai-provider-logo">✦</div>
-        <div class="ai-provider-name">ChatGPT</div>
-        <div class="ai-provider-model">OpenAI<br>GPT-4o mini</div>
-      </button>
-      <button class="ai-provider-btn" id="prov-gemini" onclick="selProvider('gemini')">
-        <div class="ai-provider-logo">◈</div>
-        <div class="ai-provider-name">Gemini</div>
-        <div class="ai-provider-model">Google<br>Gemini 1.5 Flash</div>
-      </button>
+    <div class="fl" style="margin-bottom:8px">AI 서비스</div>
+    <div style="background:var(--gold-bg);border:1px solid rgba(155,125,58,.2);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:var(--s2);display:flex;align-items:center;gap:10px">
+      <span style="font-size:20px">◈</span>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--ink)">Google Gemini</div>
+        <div style="font-size:11px;color:var(--ink-40);margin-top:2px">Gemini 2.5 Flash · 무료로 사용 가능</div>
+      </div>
     </div>
 
     <div class="ai-key-help" id="ai-key-help">
-      <b style="color:var(--ink-70)">Claude API 키 발급 방법</b><br>
-      1. <a onclick="window.open('https://console.anthropic.com')">console.anthropic.com</a> 접속 → 회원가입<br>
-      2. API Keys 메뉴 → Create Key<br>
-      3. 생성된 키(sk-ant-...) 복사 후 아래에 입력
+      <b style="color:var(--ink-70)">Gemini API 키 무료 발급 방법</b><br>
+      1. <a onclick="window.open('https://aistudio.google.com/app/apikey')">aistudio.google.com</a> 접속 (Google 계정으로 로그인)<br>
+      2. <b style="color:var(--ink-70)">Create API key</b> 버튼 클릭<br>
+      3. 생성된 키(AIza...) 복사 후 아래에 입력
     </div>
 
     <div class="fl" style="margin-bottom:8px">API 키 입력</div>
     <div class="ai-key-inp-row">
-      <input class="modal-input" type="password" id="ai-key-inp" placeholder="API 키를 여기에 붙여넣으세요" style="margin-bottom:0">
+      <input class="modal-input" type="password" id="ai-key-inp" placeholder="AIza... 형식의 키를 붙여넣으세요" style="margin-bottom:0">
       <button class="ai-key-toggle" id="ai-key-toggle" onclick="toggleKeyVis()">보기</button>
     </div>
     <div class="ai-key-warn">
@@ -943,7 +933,7 @@ select.fi {
           <span class="ai-setup-banner-icon">⚙️</span>
           <div class="ai-setup-banner-text">
             <div class="ai-setup-banner-title">AI 분류를 쓰려면 API 키 설정이 필요해요</div>
-            <div class="ai-setup-banner-sub">Claude · ChatGPT · Gemini 중 하나를 선택하고 키를 입력하면 바로 사용할 수 있어요</div>
+            <div class="ai-setup-banner-sub">Gemini API 키(무료)를 입력하면 바로 사용할 수 있어요</div>
           </div>
           <span class="ai-setup-banner-arrow">→</span>
         </div>
@@ -1110,9 +1100,8 @@ let myCode   = localStorage.getItem('jrnl_code')               || genCode();
 let friends  = JSON.parse(localStorage.getItem('jrnl_friends') || '[]');
 let groups   = JSON.parse(localStorage.getItem('jrnl_groups')  || '[]');
 
-// AI 설정
-let aiProvider = localStorage.getItem('jrnl_ai_provider') || 'claude';
-let aiKey      = localStorage.getItem('jrnl_ai_key')      || '';
+// AI 설정 (Gemini 전용)
+let aiKey = localStorage.getItem('jrnl_ai_key') || '';
 
 let curFilter = 'all';
 let curSort   = 'recent'; // 'recent' | 'rating' | 'oldest' | 'name'
@@ -1315,42 +1304,17 @@ function delR(i) {
 }
 
 /* ═══════════════════════════════
-   AI 설정 모달
+   AI 설정 모달 (Gemini 전용)
 ═══════════════════════════════ */
-const AI_PROVIDERS = {
-  claude: {
-    name: 'Claude (Anthropic)',
-    helpHtml: `<b style="color:var(--ink-70)">Claude API 키 발급</b><br>
-1. <a onclick="window.open('https://console.anthropic.com')">console.anthropic.com</a> 접속 → 회원가입<br>
-2. 좌측 메뉴 API Keys → Create Key<br>
-3. 생성된 키(sk-ant-...) 복사 후 입력`,
-  },
-  gpt: {
-    name: 'ChatGPT (OpenAI)',
-    helpHtml: `<b style="color:var(--ink-70)">OpenAI API 키 발급</b><br>
-1. <a onclick="window.open('https://platform.openai.com/api-keys')">platform.openai.com/api-keys</a> 접속<br>
-2. Create new secret key<br>
-3. 생성된 키(sk-...) 복사 후 입력`,
-  },
-  gemini: {
-    name: 'Gemini (Google)',
-    helpHtml: `<b style="color:var(--ink-70)">Gemini API 키 발급</b><br>
-1. <a onclick="window.open('https://aistudio.google.com/app/apikey')">aistudio.google.com</a> 접속<br>
-2. Create API key<br>
-3. 생성된 키(AIza...) 복사 후 입력`,
-  },
-};
-
 function updateAiBanner() {
-  const banner = document.getElementById('ai-setup-banner');
-  const badge  = document.getElementById('ai-key-set-badge');
+  const banner  = document.getElementById('ai-setup-banner');
+  const badge   = document.getElementById('ai-key-set-badge');
   const setText = document.getElementById('ai-key-set-text');
   if (!banner || !badge) return;
   if (aiKey) {
     banner.style.display = 'none';
     badge.style.display  = 'block';
-    const pName = AI_PROVIDERS[aiProvider]?.name || 'AI';
-    setText.textContent  = pName + ' 연결됨';
+    setText.textContent  = 'Gemini 연결됨';
   } else {
     banner.style.display = 'flex';
     badge.style.display  = 'none';
@@ -1358,7 +1322,6 @@ function updateAiBanner() {
 }
 
 function openAiModal() {
-  selProvider(aiProvider);
   const inp = document.getElementById('ai-key-inp');
   inp.value = aiKey;
   inp.type  = 'password';
@@ -1366,16 +1329,6 @@ function openAiModal() {
   document.getElementById('ai-overlay').style.display  = 'flex';
 }
 function closeAiModal() { document.getElementById('ai-overlay').style.display = 'none'; }
-
-function selProvider(p) {
-  aiProvider = p;
-  ['claude','gpt','gemini'].forEach(id => {
-    document.getElementById('prov-' + id).classList.toggle('on', id === p);
-  });
-  document.getElementById('ai-key-help').innerHTML = AI_PROVIDERS[p].helpHtml;
-  document.getElementById('ai-key-inp').value = '';
-  document.getElementById('ai-key-inp').placeholder = p === 'claude' ? 'sk-ant-...' : p === 'gpt' ? 'sk-...' : 'AIza...';
-}
 
 function toggleKeyVis() {
   const inp = document.getElementById('ai-key-inp');
@@ -1388,61 +1341,23 @@ function saveAiKey() {
   const key = document.getElementById('ai-key-inp').value.trim();
   if (!key) { alert('API 키를 입력해주세요'); return; }
   aiKey = key;
-  localStorage.setItem('jrnl_ai_provider', aiProvider);
-  localStorage.setItem('jrnl_ai_key',      aiKey);
+  localStorage.setItem('jrnl_ai_key', aiKey);
   closeAiModal();
   updateAiBanner();
   alert('저장됐어요! 이제 AI 분류 버튼을 눌러보세요 ✦');
 }
 
 /* ═══════════════════════════════
-   AI ANALYZE — 멀티 프로바이더
+   AI ANALYZE — Gemini
 ═══════════════════════════════ */
 const AI_PROMPT = (name) =>
   `전 세계 주류 전문가로서 아래 술을 분석해. 반드시 순수 JSON만 반환. 백틱·설명·마크다운 절대 없이.\n\n술 이름: "${name}"\n\n{"category":"막걸리|약주·청주|소주|증류식 소주|과실주|와인|맥주|위스키|고량주|사케|진·보드카·럼|칵테일|기타 중 하나","abv":"도수 또는 빈문자열","origin":"원산지·생산자 또는 빈문자열","desc":"특징 2문장 한국어","tastes":["달콤한","산뜻한·시트러스","묵직한·풀바디","탄산감","쌉쌀한","고소한·견과류","꽃향기","과일향","오크·우드","훈연·스모키","흙내음·미네랄","스파이시","감칠맛·우마미","부드러운·실키","드라이","허브·약초"] 중 2~4개 배열,"summary_hint":"맛 한 줄 요약 한국어"}`;
-
-async function callClaude(name) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': aiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 600, messages: [{ role: 'user', content: AI_PROMPT(name) }] })
-  });
-  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${res.status}`); }
-  const d = await res.json();
-  return (d.content || []).map(c => c.text || '').join('').trim();
-}
-
-async function callGPT(name) {
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + aiKey },
-    body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: 600, messages: [{ role: 'user', content: AI_PROMPT(name) }] })
-  });
-  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${res.status}`); }
-  const d = await res.json();
-  return d.choices?.[0]?.message?.content?.trim() || '';
-}
-
-async function callGemini(name) {
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts: [{ text: AI_PROMPT(name) }] }] })
-  });
-  if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e.error?.message || `HTTP ${res.status}`); }
-  const d = await res.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
-}
 
 async function aiAnalyze() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) { alert('술 이름을 먼저 입력해주세요'); return; }
 
-  // 키 미설정
-  if (!aiKey) {
-    openAiModal();
-    return;
-  }
+  if (!aiKey) { openAiModal(); return; }
 
   const btn      = document.getElementById('ai-btn');
   const feedback = document.getElementById('ai-feedback');
@@ -1454,11 +1369,20 @@ async function aiAnalyze() {
   feedback.innerHTML = `<span class="spinner"></span> AI가 분석하는 중이에요...`;
 
   try {
-    let raw = '';
-    if      (aiProvider === 'claude') raw = await callClaude(name);
-    else if (aiProvider === 'gpt')    raw = await callGPT(name);
-    else                              raw = await callGemini(name);
-
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${aiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: AI_PROMPT(name) }] }] })
+      }
+    );
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error?.message || `HTTP ${res.status}`);
+    }
+    const d   = await res.json();
+    const raw = d.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
     const json = JSON.parse(cleaned);
 
@@ -1472,9 +1396,9 @@ async function aiAnalyze() {
     if (json.desc)   document.getElementById('f-desc').value   = json.desc;
     if (Array.isArray(json.tastes)) {
       json.tastes.forEach(t => {
-        const btn = [...document.querySelectorAll('#taste-chips .chip')]
+        const b = [...document.querySelectorAll('#taste-chips .chip')]
           .find(b => b.textContent.trim() === t);
-        if (btn && !btn.classList.contains('on')) { btn.classList.add('on'); selTastes.push(t); }
+        if (b && !b.classList.contains('on')) { b.classList.add('on'); selTastes.push(t); }
       });
     }
 
@@ -1486,12 +1410,11 @@ async function aiAnalyze() {
   } catch(e) {
     console.error('AI error:', e);
     feedback.className = 'ai-feedback error';
-    // 키 오류인지 판별
     const msg = e.message || '';
-    if (msg.includes('401') || msg.includes('403') || msg.includes('invalid') || msg.includes('Unauthorized')) {
+    if (msg.includes('API_KEY_INVALID') || msg.includes('400') || msg.includes('403')) {
       feedback.innerHTML = 'API 키가 올바르지 않아요. <span style="text-decoration:underline;cursor:pointer;color:var(--gold)" onclick="openAiModal()">키 재설정</span>';
     } else {
-      feedback.innerHTML = `분석 실패: ${msg}. <span style="text-decoration:underline;cursor:pointer;color:var(--gold)" onclick="openAiModal()">설정 확인</span>`;
+      feedback.innerHTML = `분석 실패: ${msg} <span style="text-decoration:underline;cursor:pointer;color:var(--gold)" onclick="openAiModal()">설정 확인</span>`;
     }
     result.style.display = 'none';
   }
